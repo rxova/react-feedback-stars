@@ -13,9 +13,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.pw-browsers
-
 jobs:
   static:
     name: lint · types · format
@@ -67,22 +64,9 @@ jobs:
 
       # The browser binary is the slow part and only changes when Playwright
       # does, so the cache key is the resolved version.
-      - name: Resolve Playwright version
-        id: pw
-        run: echo "version=$(node -p "require('./node_modules/playwright/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6
-        id: pw-cache
+      - uses: ./.github/actions/setup-playwright
         with:
-          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
-          # Scoped to chromium: the e2e job caches all three engines, and a
-          # shared key would let this job's narrower cache satisfy it.
-          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium
-      - name: Install Chromium
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Install system dependencies only
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: pnpm exec playwright install-deps chromium
+          browsers: chromium
 
       # Enforces 95% per file. A new file with thin tests fails here even when
       # the repository average would still pass.
@@ -102,23 +86,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Resolve Playwright version
-        id: pw
-        run: echo "version=$(node -p "require('./node_modules/playwright/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6
-        id: pw-cache
-        with:
-          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
-          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}-all
-      # All three engines. This component is geometry -- CSS logical properties
-      # for RTL, overflow clipping, filters on emoji, :focus-visible -- so one
-      # engine is not evidence that it renders correctly.
-      - name: Install browsers
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
-      - name: Install system dependencies only
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: pnpm exec playwright install-deps chromium firefox webkit
+      - uses: ./.github/actions/setup-playwright
 
       - run: pnpm run e2e
       - name: Upload Playwright report
@@ -142,20 +110,9 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Resolve Playwright version
-        id: pw
-        run: echo "version=$(node -p "require('./node_modules/playwright/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6
-        id: pw-cache
+      - uses: ./.github/actions/setup-playwright
         with:
-          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
-          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium
-      - name: Install Chromium
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Install system dependencies only
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: pnpm exec playwright install-deps chromium
+          browsers: chromium
       - name: Install the minimum supported React and re-run
         run: pnpm run test:react-min
 

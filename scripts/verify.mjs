@@ -16,6 +16,7 @@ export const steps = [
   { name: 'Audit dependencies', script: 'audit:check' },
   { name: 'Check dependency dedupe', script: 'dedupe:check' },
   { name: 'Check formatting', script: 'format:check' },
+  { name: 'Check e2e browser list', script: 'check:browsers' },
   { name: 'Lint', script: 'lint' },
   { name: 'Typecheck', script: 'typecheck' },
   { name: 'Test with coverage', script: 'test:coverage' },

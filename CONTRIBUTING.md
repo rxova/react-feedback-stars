@@ -37,7 +37,7 @@ Requirements:
 
 ```bash
 pnpm install
-pnpm exec playwright install chromium   # for the browser and E2E suites
+pnpm run e2e:install                    # browsers for the E2E and browser suites
 pnpm dev                                # playground on :5173
 ```
 

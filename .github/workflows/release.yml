@@ -30,8 +30,10 @@ jobs:
         run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
 
-      - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+      # `verify` ends with the e2e suite, which drives all three engines.
+      # Installing only Chromium here failed at launch with
+      # "Executable doesn't exist at .../webkit-2311/pw_run.sh".
+      - uses: ./.github/actions/setup-playwright
 
       # The same ordered gate CI and the pre-push hook run. Keeping it here
       # rather than trusting the CI run means a push straight to main cannot
