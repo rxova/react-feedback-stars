@@ -1,5 +1,19 @@
 # react-feedback-stars
 
+<p align="center">
+  <img src="./assets/react-feedback-stars.png" alt="react-feedback-stars logo" width="180" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/jonakrusze/react-feedback-stars/actions/workflows/ci.yml"><img src="https://github.com/jonakrusze/react-feedback-stars/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status" /></a>
+  <img src="https://img.shields.io/badge/brotli-%E2%89%A4%203%20kB-f5a623" alt="Brotli size at most 3 kB" />
+  <img src="https://img.shields.io/badge/coverage%20threshold-95%25-brightgreen" alt="Coverage threshold: 95% per file" />
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white" alt="TypeScript strict mode" />
+  <img src="https://img.shields.io/badge/dependencies-0-44cc11" alt="Zero runtime dependencies" />
+  <img src="https://img.shields.io/badge/React-%E2%89%A518-61dafb?logo=react&logoColor=white" alt="React 18 or newer" />
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" /></a>
+</p>
+
 Headless, zero-dependency React rating component. **Any icon, any precision, accessible.**
 
 ```bash
