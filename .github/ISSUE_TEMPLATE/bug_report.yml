@@ -1,0 +1,90 @@
+name: 'Bug report'
+description: 'Report a reproducible problem in react-feedback-stars.'
+title: 'bug: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The fields below are the axes this component actually
+        varies on — filling them in usually identifies the cause immediately.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: 'react-feedback-stars@x.y.z'
+    validations:
+      required: true
+  - type: input
+    id: react-version
+    attributes:
+      label: React version
+      placeholder: '19.2.0'
+    validations:
+      required: true
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Where does it happen?
+      options:
+        - Browser (client render)
+        - SSR / hydration
+        - React Server Components
+        - A test environment (jsdom, happy-dom, ...)
+        - Build or type-checking
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - Read-only (no onChange)
+        - Interactive (onChange)
+        - Disabled
+        - Inside a form library
+    validations:
+      required: true
+  - type: input
+    id: rounding
+    attributes:
+      label: precision / rounding
+      description: 'The combination in use. Most behaviour differences trace back to this pair.'
+      placeholder: "precision={0.5} rounding='nearest'"
+    validations:
+      required: true
+  - type: dropdown
+    id: icon
+    attributes:
+      label: Icon type
+      options:
+        - Default star
+        - Emoji
+        - Inline SVG
+        - Custom component or JSX
+        - Render function
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: 'A minimal snippet, or a link to a StackBlitz/CodeSandbox. `pnpm dev` in this repo runs a playground you can adapt.'
+      render: tsx
+    validations:
+      required: true
+  - type: checkboxes
+    id: rtl
+    attributes:
+      label: Anything else applicable?
+      options:
+        - label: 'The page is right-to-left'
+        - label: 'The user prefers reduced motion'
+        - label: 'A strict Content Security Policy is in effect'
+        - label: 'Custom `--rfs-*` CSS variables are set'

@@ -1,0 +1,47 @@
+name: Setup pnpm
+description: Enable Corepack, pin pnpm, and configure Node.js with dependency caching.
+
+inputs:
+  node-version:
+    description: Node.js version to install.
+    required: false
+    default: '24'
+  registry-url:
+    description: Package registry URL. Set only on publishing jobs.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Enable Corepack
+      shell: bash
+      run: corepack enable
+
+    - name: Pin pnpm
+      shell: bash
+      # Pinned to the packageManager field so CI and local installs agree.
+      run: corepack prepare pnpm@11.9.0 --activate
+
+    - name: Setup Node
+      if: ${{ inputs['registry-url'] == '' }}
+      uses: actions/setup-node@v5
+      with:
+        node-version: ${{ inputs['node-version'] }}
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
+
+    - name: Setup Node with registry
+      if: ${{ inputs['registry-url'] != '' }}
+      uses: actions/setup-node@v5
+      with:
+        node-version: ${{ inputs['node-version'] }}
+        registry-url: ${{ inputs['registry-url'] }}
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
+
+    - name: Report versions
+      shell: bash
+      run: |
+        node --version
+        pnpm --version

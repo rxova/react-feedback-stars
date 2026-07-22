@@ -6,8 +6,8 @@ import { Rating } from '../Rating'
  * Runs in the node project, where `window` genuinely does not exist. That makes
  * this the only place the SSR paths are exercised for real: `useSyncExternalStore`'s
  * server snapshot in usePrefersReducedMotion, and the `typeof window === 'undefined'`
- * guard behind it. The README and DESIGN.md both claim SSR safety; without this
- * file that claim is untested.
+ * guard behind it. The README claims SSR safety; without this file that claim
+ * is untested.
  */
 describe('server rendering', () => {
   it('renders read-only markup without a DOM', () => {

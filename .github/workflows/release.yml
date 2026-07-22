@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency: release-${{ github.ref }}
 
@@ -13,31 +14,38 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # create the Version PR / tags
-      pull-requests: write
-      # Required for npm trusted publishing (OIDC). This is what lets us
-      # publish with provenance and no NPM_TOKEN secret to leak or rotate.
+      contents: write # version commit and tags
+      pull-requests: write # the version PR
+      # npm trusted publishing (OIDC): lets us publish with provenance and no
+      # long-lived NPM_TOKEN in the repository.
       id-token: write
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: ./.github/actions/setup-pnpm
         with:
-          node-version: 24
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-
+          registry-url: 'https://registry.npmjs.org'
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
 
-      - name: Create Version PR or publish
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      # The same ordered gate CI and the pre-push hook run. Keeping it here
+      # rather than trusting the CI run means a push straight to main cannot
+      # publish something a pull request would have been blocked on.
+      - name: Verify release surfaces
+        run: pnpm run verify
+
+      - name: Create version PR or publish
         uses: changesets/action@v1
         with:
-          version: pnpm changeset version
-          publish: pnpm release
-          commit: 'chore: version packages'
-          title: 'chore: version packages'
+          version: pnpm exec changeset version
+          publish: pnpm run release
+          commit: 'chore: version package'
+          title: 'chore: version package'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true'

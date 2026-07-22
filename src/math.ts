@@ -36,7 +36,7 @@ export function normalizeMax(max: number): number {
 }
 
 /**
- * Snap `value` onto a `precision` grid in the given direction (§3).
+ * Snap `value` onto a `precision` grid in the given direction.
  *
  * Works in integer space rather than dividing floats: `4.35 / 0.1` is
  * `43.499999999999996` in IEEE-754, which naively floors to 4.3 when the

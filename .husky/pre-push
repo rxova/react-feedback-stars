@@ -1,4 +1,6 @@
-# Deliberately NOT the browser suite. A pre-push hook that takes 40s gets
-# bypassed with --no-verify, and a bypassed hook is worse than no hook.
-# Browser tests are CI's job.
-pnpm typecheck && pnpm test:unit
+#!/usr/bin/env sh
+set -e
+
+# The same ordered gate CI and the release workflow run, so a green push
+# means a green pipeline.
+pnpm run verify

@@ -124,7 +124,7 @@ describe('interactive semantics', () => {
     expect(getComputedStyle(focused!).outlineStyle).not.toBe('none')
   })
 
-  it('gives the root a programmatic focus target for focus-first-error (§9.5)', async () => {
+  it('gives the root a programmatic focus target for focus-first-error', async () => {
     const { container } = await render(
       <Rating value={0} onChange={() => undefined} precision={1} />,
     )

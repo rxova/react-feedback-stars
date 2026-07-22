@@ -19,7 +19,7 @@ describe('clampValue', () => {
     [-1, 5, 0],
     [-0.0001, 5, 0],
     // Non-finite is garbage input, and garbage must never inflate a rating.
-    // DESIGN.md §2.2: NaN/Infinity -> 0.
+    // Documented contract: NaN/Infinity -> 0.
     [Number.NaN, 5, 0],
     [Number.POSITIVE_INFINITY, 5, 0],
     [Number.NEGATIVE_INFINITY, 5, 0],
@@ -56,8 +56,8 @@ describe('decimalPlaces', () => {
   })
 })
 
-describe('snap — the DESIGN.md §3 table', () => {
-  // Every row of the published table. If this table changes, the docs are wrong.
+describe('snap — the published rounding table', () => {
+  // Every row of the table in the README. If this changes, the docs are wrong.
   const table: [string, number, number, RatingRounding, number][] = [
     ['exact 4.3', 4.3, 0, 'none', 4.3],
     ['exact 4.7', 4.7, 0, 'none', 4.7],

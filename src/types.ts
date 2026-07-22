@@ -1,6 +1,6 @@
 import type { CSSProperties, FocusEvent, ReactNode, Ref } from 'react'
 
-/** How a value snaps onto the `precision` grid. See §3 of DESIGN.md. */
+/** How a value snaps onto the `precision` grid. See the rounding table in the README. */
 export type RatingRounding = 'nearest' | 'down' | 'up' | 'none'
 
 /** Per-icon state handed to an `icon` / `emptyIcon` render function. */

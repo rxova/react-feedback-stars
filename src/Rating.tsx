@@ -22,7 +22,7 @@ const rootStyle: CSSProperties = {
 
 const itemStyle: CSSProperties = {
   // font-size drives the box so emoji, which size by font-size rather than
-  // width/height, scale identically to SVG (§4.1).
+  // width/height, scale identically to SVG.
   fontSize: 'var(--rfs-size, 1.25rem)',
   lineHeight: 1,
   position: 'relative',
@@ -95,7 +95,8 @@ export function Rating(props: RatingProps) {
 
   // An explicit emptyIcon is the consumer's own artwork, so leave it alone.
   // The implicit one is the same glyph and must be dimmed to be legible as a
-  // track — by filter, not colour, because colour is a no-op on emoji (§4.1).
+  // track — by filter, not colour, because colour is a no-op on emoji: they
+  // render from a COLR font, so `color` and `fill` do nothing to them.
   const dimEmpty = emptyIcon === undefined
   const stepsPerItem = precision > 0 ? Math.max(1, Math.round(1 / precision)) : 1
 
@@ -262,8 +263,8 @@ export function Rating(props: RatingProps) {
       aria-invalid={invalid ? true : undefined}
       aria-describedby={describedBy}
       aria-disabled={disabled ? true : undefined}
-      // §9.5 — makes ref.current.focus() work for RHF setFocus() and
-      // focus-first-error patterns. Not in the tab order.
+      // Makes ref.current.focus() work for React Hook Form's setFocus() and
+      // focus-first-error patterns. Not in the tab order itself.
       tabIndex={-1}
       onBlur={handleBlur}
       onKeyDown={(e) => {

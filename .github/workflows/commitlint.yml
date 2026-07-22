@@ -1,0 +1,25 @@
+name: Commitlint
+
+on:
+  pull_request:
+    # `edited` matters: retitling a PR must re-check it, because the title
+    # becomes the squash-merge commit message.
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: commitlint.config.cjs
+          commitDepth: 0

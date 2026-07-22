@@ -1,0 +1,32 @@
+name: 'Feature request'
+description: 'Suggest a capability for react-feedback-stars.'
+title: 'feat: '
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: 'Describe the use case, not the solution. What are you building?'
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: 'Sketch the props or usage you would want.'
+      render: tsx
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround
+      description: 'Can you achieve this today with `icon` as a render function, `useRating`, or CSS custom properties? If so, what makes that unsatisfying?'
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints
+      description: 'These are hard project rules; a proposal that breaks one needs a strong argument.'
+      options:
+        - label: 'This does not require a runtime dependency'
+        - label: 'This does not require shipping a stylesheet'
+        - label: 'This does not regress accessibility'

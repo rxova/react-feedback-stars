@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+      time: '03:00'
+    open-pull-requests-limit: 10
+    groups:
+      # One PR per ecosystem cluster keeps review load sane on a small repo.
+      dev-tooling:
+        patterns: ['eslint*', '@eslint/*', 'typescript-eslint', 'prettier', 'husky', 'lint-staged']
+      testing:
+        patterns:
+          [
+            'vitest',
+            '@vitest/*',
+            'playwright',
+            '@playwright/*',
+            'vitest-browser-react',
+            'axe-core',
+            '@axe-core/*',
+          ]

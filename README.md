@@ -174,8 +174,8 @@ on emoji and SVG alike. Pass an explicit `emptyIcon` and no filter is applied.
 
 ## Props
 
-See [`src/types.ts`](./src/types.ts) for the full annotated interface, and
-[DESIGN.md](./DESIGN.md) for the rationale behind every decision.
+See [`src/types.ts`](./src/types.ts) for the full annotated interface — every prop carries a
+TSDoc comment explaining what it does and why it exists.
 
 ## Headless
 
