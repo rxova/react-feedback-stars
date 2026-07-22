@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jonakrusze/react-feedback-stars/actions/workflows/ci.yml"><img src="https://github.com/jonakrusze/react-feedback-stars/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status" /></a>
+  <a href="https://github.com/rxova/react-feedback-stars/actions/workflows/ci.yml"><img src="https://github.com/rxova/react-feedback-stars/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status" /></a>
   <img src="https://img.shields.io/badge/brotli-%E2%89%A4%203%20kB-f5a623" alt="Brotli size at most 3 kB" />
   <img src="https://img.shields.io/badge/coverage%20threshold-95%25-brightgreen" alt="Coverage threshold: 95% per file" />
   <img src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white" alt="TypeScript strict mode" />

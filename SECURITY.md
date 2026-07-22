@@ -26,7 +26,7 @@ This is a volunteer-maintained project, so these are goals rather than contractu
 
 Use one of the following:
 
-- [GitHub Security Advisory form](https://github.com/jonakrusze/react-feedback-stars/security/advisories/new)
+- [GitHub Security Advisory form](https://github.com/rxova/react-feedback-stars/security/advisories/new)
 - Email the maintainer if the advisory form is unavailable.
 
 Include:

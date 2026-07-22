@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "jonakrusze/react-feedback-stars" }],
+  "changelog": ["@changesets/changelog-github", { "repo": "rxova/react-feedback-stars" }],
   "commit": false,
   "access": "public",
   "baseBranch": "main",
