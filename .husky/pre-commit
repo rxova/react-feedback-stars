@@ -5,4 +5,7 @@ pnpm exec lint-staged
 pnpm run lint
 pnpm run typecheck
 pnpm run test:coverage
+# Build first: size-limit measures dist/, so without this the hook fails
+# confusingly on a fresh clone that has never been built.
+pnpm run build
 pnpm run size
