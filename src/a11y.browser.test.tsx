@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { page, userEvent } from '@vitest/browser/context'
 import { render } from 'vitest-browser-react'
 import { Rating } from './Rating'
@@ -136,5 +136,95 @@ describe('target size', () => {
     const box = label.getBoundingClientRect()
     expect(box.width).toBeGreaterThanOrEqual(24)
     expect(box.height).toBeGreaterThanOrEqual(24)
+  })
+})
+
+describe('axe', () => {
+  async function violations(container: HTMLElement) {
+    const axe = (await import('axe-core')).default
+    const results = await axe.run(container, {
+      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+    })
+    return results.violations.map((v) => `${v.id}: ${v.help}`)
+  }
+
+  it('is clean in read-only mode', async () => {
+    const { container } = await render(<Rating value={4.3} label="Average rating" />)
+    await expect.element(page.getByRole('img')).toBeInTheDocument()
+    expect(await violations(container)).toEqual([])
+  })
+
+  it('is clean in interactive mode', async () => {
+    const { container } = await render(
+      <Rating value={0} onChange={() => undefined} precision={0.5} label="Rate your meal" />,
+    )
+    await expect.element(page.getByRole('radiogroup')).toBeInTheDocument()
+    expect(await violations(container)).toEqual([])
+  })
+
+  it('is clean in an invalid, described state', async () => {
+    const { container } = await render(
+      <>
+        <Rating
+          value={0}
+          onChange={() => undefined}
+          precision={1}
+          label="Rate"
+          invalid
+          required
+          aria-describedby="e"
+        />
+        <p id="e">Required</p>
+      </>,
+    )
+    await expect.element(page.getByRole('radiogroup')).toBeInTheDocument()
+    expect(await violations(container)).toEqual([])
+  })
+})
+
+describe('keyboard shortcuts', () => {
+  it('jumps to a value with a digit key', async () => {
+    const onChange = vi.fn()
+    await render(<Rating defaultValue={1} onChange={onChange} precision={1} />)
+    await page.getByRole('radio', { name: '1 of 5' }).click()
+    onChange.mockClear()
+    await userEvent.keyboard('4')
+    expect(onChange).toHaveBeenCalledWith(4)
+  })
+
+  it('ignores a digit beyond max', async () => {
+    const onChange = vi.fn()
+    await render(<Rating defaultValue={1} onChange={onChange} precision={1} max={5} />)
+    await page.getByRole('radio', { name: '1 of 5' }).click()
+    onChange.mockClear()
+    await userEvent.keyboard('9')
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('re-typing the current value keeps it rather than clearing', async () => {
+    const onChange = vi.fn()
+    await render(<Rating value={3} onChange={onChange} precision={1} />)
+    await page.getByRole('radio', { name: '3 of 5' }).click()
+    onChange.mockClear()
+    await userEvent.keyboard('3')
+    expect(onChange).toHaveBeenCalledWith(3)
+  })
+
+  it('clears with Backspace when allowClear', async () => {
+    const onChange = vi.fn()
+    await render(<Rating value={3} onChange={onChange} precision={1} />)
+    await page.getByRole('radio', { name: '3 of 5' }).click()
+    onChange.mockClear()
+    await userEvent.keyboard('{Backspace}')
+    expect(onChange).toHaveBeenCalledWith(0)
+  })
+
+  it('does not clear with Backspace when allowClear is false', async () => {
+    const onChange = vi.fn()
+    await render(<Rating value={3} onChange={onChange} precision={1} allowClear={false} />)
+    await page.getByRole('radio', { name: '3 of 5' }).click()
+    onChange.mockClear()
+    await userEvent.keyboard('{Backspace}')
+    expect(onChange).not.toHaveBeenCalled()
   })
 })

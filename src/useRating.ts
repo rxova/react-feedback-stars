@@ -37,6 +37,9 @@ export interface UseRatingResult {
   name: string
   baseId: string
   rootRef: React.RefObject<HTMLSpanElement | null>
+  /** Commit a value verbatim (keyboard entry). */
+  commit: (next: number) => void
+  /** Pointer semantics: re-selecting the current value clears it. */
   select: (next: number) => void
   setHover: (next: number | null) => void
   setFocused: (next: number | null) => void
@@ -89,17 +92,30 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
   const fills = useMemo(() => getFills(displayValue, max), [displayValue, max])
   const steps = useMemo(() => getSteps(max, precision), [max, precision])
 
+  /** Commit a value as-is. No toggle, no clear-on-reselect. */
+  const commit = useCallback(
+    (next: number) => {
+      if (!interactive) return
+      const committed = clampValue(next, max)
+      if (!isControlled) setUncontrolled(committed)
+      onChange?.(committed)
+    },
+    [interactive, isControlled, max, onChange],
+  )
+
+  /**
+   * Pointer-selection semantics: re-selecting the current value clears it.
+   * Lives here rather than in the component so a custom renderer gets the
+   * affordance for free. Keyboard entry uses `commit` instead — typing "3"
+   * when the value is already 3 should mean 3, not zero.
+   */
   const select = useCallback(
     (next: number) => {
       if (!interactive) return
       const requested = clampValue(next, max)
-      // Re-selecting the current value clears. Lives here rather than in the
-      // component so a custom renderer gets the affordance for free.
-      const committed = allowClear && requested === value ? 0 : requested
-      if (!isControlled) setUncontrolled(committed)
-      onChange?.(committed)
+      commit(allowClear && requested === value ? 0 : requested)
     },
-    [allowClear, interactive, isControlled, max, onChange, value],
+    [allowClear, commit, interactive, max, value],
   )
 
   const setHover = useCallback(
@@ -150,6 +166,7 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
     name,
     baseId,
     rootRef,
+    commit,
     select,
     setHover,
     setFocused,

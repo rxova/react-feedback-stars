@@ -66,6 +66,7 @@ export function Rating(props: RatingProps) {
     required,
     disabled = false,
     precision = 0,
+    allowClear = true,
     'aria-describedby': describedBy,
     ref,
   } = props
@@ -83,6 +84,7 @@ export function Rating(props: RatingProps) {
     name,
     baseId,
     rootRef,
+    commit,
     select,
     setHover,
     setFocused,
@@ -261,6 +263,20 @@ export function Rating(props: RatingProps) {
       // focus-first-error patterns. Not in the tab order.
       tabIndex={-1}
       onBlur={handleBlur}
+      onKeyDown={(e) => {
+        if (e.altKey || e.ctrlKey || e.metaKey) return
+        // Native radios already give us arrows, Home and End. These are the
+        // shortcuts the platform does not provide.
+        if (/^[0-9]$/.test(e.key)) {
+          const digit = Number(e.key)
+          if (digit > max) return
+          e.preventDefault()
+          commit(digit)
+        } else if (e.key === 'Backspace' || e.key === 'Delete') {
+          e.preventDefault()
+          if (allowClear) commit(0)
+        }
+      }}
       onPointerLeave={() => {
         setHover(null)
       }}

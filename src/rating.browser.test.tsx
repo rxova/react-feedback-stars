@@ -157,11 +157,20 @@ describe('interaction', () => {
 
   it('updates an uncontrolled value', async () => {
     const { container } = await render(
-      <Rating defaultValue={0} onChange={() => undefined} precision={1} />,
+      <>
+        <h1>away</h1>
+        <Rating defaultValue={0} onChange={() => undefined} precision={1} />
+      </>,
     )
     await page.getByRole('radio', { name: '3 of 5' }).click()
-    // The fill width is transitioned, so measuring synchronously after the
-    // click samples the animation mid-flight. Settle first.
+
+    // The cursor is physically parked on the widget after the click, so the
+    // paint still shows a hover preview. Move off before measuring committed
+    // state, or this asserts the preview instead of the value.
+    await page.getByRole('heading', { name: 'away' }).hover()
+
+    // The fill width is transitioned, so measuring synchronously samples the
+    // animation mid-flight. Settle first.
     await vi.waitFor(() => {
       expect(fillRatio(container, 2)).toBeCloseTo(1, 2)
     })
