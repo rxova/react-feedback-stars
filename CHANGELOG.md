@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- [`919abfa`](https://github.com/rxova/react-feedback-stars/commit/919abfa8ff2ad1fb8694c9ae7c48bf22f3114e1d) Thanks [@jonatankruszewski](https://github.com/jonatankruszewski)! - First release. A headless, zero-dependency React rating component: bring your own
+- [`919abfa`](https://github.com/rxova/react-feedback-stars/commit/919abfa8ff2ad1fb8694c9ae7c48bf22f3114e1d) - First release. A headless, zero-dependency React rating component: bring your own
   icon, choose your own precision, accessible by construction.
 
   **Rendering**
