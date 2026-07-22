@@ -10,6 +10,13 @@ updates:
       interval: monthly
       time: '03:00'
     open-pull-requests-limit: 10
+    ignore:
+      # TypeScript 7 is the native compiler rewrite. typescript-eslint@8 peers
+      # `typescript >=4.8.4 <6.1.0`, so adopting it silently drops every
+      # type-aware lint rule. Revisit when typescript-eslint ships TS 7
+      # support, then remove this entry rather than merging the bump blind.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
     groups:
       # One PR per ecosystem cluster keeps review load sane on a small repo.
       dev-tooling:

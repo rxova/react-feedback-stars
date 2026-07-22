@@ -26,7 +26,14 @@ attributes listed in the README. Both are covered by semver.
 
 ## Setup
 
-Requirements: Node `>= 20.19` (see `.nvmrc`) and pnpm (see `packageManager` in `package.json`).
+Requirements:
+
+- **Developing this repo: Node `>= 22.13`** (see `.nvmrc`). This is a pnpm constraint, not ours —
+  pnpm 11 imports `node:sqlite` and crashes on older Node.
+- **Using the published package: Node `>= 20.19`** (`engines.node`). CI still runs the unit suite
+  on Node 20 by installing under Node 22 and then invoking Vitest's binary directly, so the
+  support claim stays tested rather than assumed.
+- pnpm, pinned via `packageManager` in `package.json`.
 
 ```bash
 pnpm install
