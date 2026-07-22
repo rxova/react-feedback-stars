@@ -102,6 +102,12 @@ export function Rating(props: RatingProps) {
   const accessibleName =
     label ?? formatLabel?.(value, max) ?? `${String(value)} out of ${String(max)}`
 
+  // Roving tabindex. Browsers only collapse a radio group to a single tab stop
+  // once one of its radios is checked; an unrated group leaves every radio
+  // sequentially focusable, so a 5-star half-precision rating would cost a
+  // keyboard user ten tab stops for one field.
+  const tabbableStep = steps.includes(value) ? value : steps[0]
+
   const items = fills.map((fill, index) => {
     const active = canChange && displayValue > index
     const state: RatingIconState = {
@@ -190,6 +196,7 @@ export function Rating(props: RatingProps) {
                 name={name}
                 value={stepValue}
                 checked={value === stepValue}
+                tabIndex={stepValue === tabbableStep ? 0 : -1}
                 disabled={disabled}
                 required={required && stepValue === steps[0]}
                 aria-label={

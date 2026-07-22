@@ -242,3 +242,47 @@ describe('keyboard shortcuts', () => {
     expect(onChange).not.toHaveBeenCalled()
   })
 })
+
+describe('roving tabindex', () => {
+  // Browsers only collapse a radio group to one tab stop once something is
+  // checked. Without an explicit roving tabindex an unrated half-star widget
+  // costs a keyboard user ten tab stops for a single field.
+  it('exposes exactly one tab stop when nothing is selected', async () => {
+    const { container } = await render(
+      <Rating defaultValue={0} onChange={() => undefined} precision={0.5} />,
+    )
+    await expect.element(page.getByRole('radiogroup')).toBeInTheDocument()
+    const tabbable = [...container.querySelectorAll('input[type=radio]')].filter(
+      (el) => el.getAttribute('tabindex') === '0',
+    )
+    expect(tabbable).toHaveLength(1)
+    expect(tabbable[0]).toHaveAttribute('value', '0.5')
+  })
+
+  it('moves the tab stop onto the selected value', async () => {
+    const { container } = await render(
+      <Rating value={3} onChange={() => undefined} precision={1} />,
+    )
+    await expect.element(page.getByRole('radiogroup')).toBeInTheDocument()
+    const tabbable = [...container.querySelectorAll('input[type=radio]')].filter(
+      (el) => el.getAttribute('tabindex') === '0',
+    )
+    expect(tabbable).toHaveLength(1)
+    expect(tabbable[0]).toHaveAttribute('value', '3')
+  })
+
+  it('leaves an unrated group in one Tab press', async () => {
+    await render(
+      <>
+        <button type="button">before</button>
+        <Rating defaultValue={0} onChange={() => undefined} precision={0.5} />
+        <button type="button">after</button>
+      </>,
+    )
+    await page.getByRole('button', { name: 'before' }).click()
+    await userEvent.tab()
+    expect(document.activeElement).toHaveAttribute('type', 'radio')
+    await userEvent.tab()
+    await expect.element(page.getByRole('button', { name: 'after' })).toHaveFocus()
+  })
+})
