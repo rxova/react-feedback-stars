@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { render, renderHook } from 'vitest-browser-react'
-import { page } from '@vitest/browser/context'
+import { page } from 'vitest/browser'
 import { usePrefersReducedMotion } from '../usePrefersReducedMotion'
 import { Rating } from '../Rating'
 

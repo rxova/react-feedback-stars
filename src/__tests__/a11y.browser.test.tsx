@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { page, userEvent } from '@vitest/browser/context'
+import { page, userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
 import { Rating } from '../Rating'
 

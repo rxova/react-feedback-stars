@@ -1,26 +1,23 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { renderHook } from 'vitest-browser-react'
-import { act } from 'react'
+import type { FocusEvent } from 'react'
 import { useRating } from '../useRating'
-
-declare global {
-  var IS_REACT_ACT_ENVIRONMENT: boolean | undefined
-}
-
-// These call setState directly rather than through a user interaction, so React
-// needs to be told it is in an act environment or every call logs a warning.
-beforeAll(() => {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true
-})
-afterAll(() => {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = undefined
-})
 
 /**
  * `useRating` is exported from the package entry, so it is public API and
  * deserves direct tests rather than only being exercised through <Rating>.
- * These cover the guards that the component never reaches.
+ * These cover the guards the component itself never reaches.
+ *
+ * Deliberately no `act`: callbacks are invoked directly and any resulting state
+ * is read through `expect.poll`, which retries until React has re-rendered.
+ * Pulling `act` in would require setting IS_REACT_ACT_ENVIRONMENT, and React
+ * then warns about every update that is *not* wrapped — trading three warnings
+ * for a dozen.
  */
+
+const focusEvent = (relatedTarget: EventTarget | null) =>
+  ({ relatedTarget }) as unknown as FocusEvent<HTMLElement>
+
 describe('useRating', () => {
   it('is not interactive without onChange', async () => {
     const { result } = await renderHook(() => useRating({ value: 3 }))
@@ -37,32 +34,26 @@ describe('useRating', () => {
     expect(result.current.disabled).toBe(true)
   })
 
-  it('ignores commit and select when not interactive', async () => {
+  it('ignores commit and select when read-only', async () => {
     const onChange = vi.fn()
     const { result } = await renderHook(() => useRating({ value: 2, readOnly: true, onChange }))
-    act(() => {
-      result.current.commit(4)
-      result.current.select(4)
-    })
+    result.current.commit(4)
+    result.current.select(4)
     expect(onChange).not.toHaveBeenCalled()
   })
 
   it('ignores commit and select when disabled', async () => {
     const onChange = vi.fn()
     const { result } = await renderHook(() => useRating({ value: 2, onChange, disabled: true }))
-    act(() => {
-      result.current.commit(4)
-      result.current.select(4)
-    })
+    result.current.commit(4)
+    result.current.select(4)
     expect(onChange).not.toHaveBeenCalled()
   })
 
   it('ignores hover when not interactive', async () => {
     const onHoverChange = vi.fn()
     const { result } = await renderHook(() => useRating({ value: 2, onHoverChange }))
-    act(() => {
-      result.current.setHover(4)
-    })
+    result.current.setHover(4)
     expect(onHoverChange).not.toHaveBeenCalled()
     expect(result.current.hoverValue).toBeNull()
   })
@@ -72,12 +63,10 @@ describe('useRating', () => {
     const { result } = await renderHook(() =>
       useRating({ value: 2, onChange: () => undefined, onHoverChange }),
     )
-    act(() => {
-      result.current.setHover(4)
-    })
-    act(() => {
-      result.current.setHover(4)
-    })
+    result.current.setHover(4)
+    await expect.poll(() => result.current.hoverValue).toBe(4)
+
+    result.current.setHover(4)
     expect(onHoverChange).toHaveBeenCalledTimes(1)
   })
 
@@ -93,14 +82,10 @@ describe('useRating', () => {
     const onChange = vi.fn()
     const { result } = await renderHook(() => useRating({ value: 3, onChange, precision: 1 }))
 
-    act(() => {
-      result.current.commit(3)
-    })
+    result.current.commit(3)
     expect(onChange).toHaveBeenLastCalledWith(3)
 
-    act(() => {
-      result.current.select(3)
-    })
+    result.current.select(3)
     expect(onChange).toHaveBeenLastCalledWith(0)
   })
 
@@ -109,9 +94,7 @@ describe('useRating', () => {
     const { result } = await renderHook(() =>
       useRating({ value: 3, onChange, precision: 1, allowClear: false }),
     )
-    act(() => {
-      result.current.select(3)
-    })
+    result.current.select(3)
     expect(onChange).toHaveBeenLastCalledWith(3)
   })
 
@@ -119,10 +102,8 @@ describe('useRating', () => {
     const { result } = await renderHook(() =>
       useRating({ defaultValue: 1, onChange: () => undefined, precision: 1 }),
     )
-    act(() => {
-      result.current.commit(4)
-    })
-    expect(result.current.value).toBe(4)
+    result.current.commit(4)
+    await expect.poll(() => result.current.value).toBe(4)
   })
 
   it('generates a stable group name when none is given', async () => {
@@ -137,13 +118,10 @@ describe('useRating', () => {
     const { result } = await renderHook(() =>
       useRating({ value: 1, onChange: () => undefined, onBlur, onHoverChange }),
     )
-    act(() => {
-      result.current.handleBlur({
-        relatedTarget: null,
-      } as unknown as React.FocusEvent<HTMLElement>)
-    })
+    result.current.handleBlur(focusEvent(null))
+
     expect(onBlur).toHaveBeenCalledTimes(1)
-    // Nothing was hovered, so no spurious null hover event.
+    // Nothing was hovered, so there is no spurious null hover event.
     expect(onHoverChange).not.toHaveBeenCalled()
   })
 
@@ -159,12 +137,21 @@ describe('useRating', () => {
     document.body.appendChild(root)
     result.current.rootRef.current = root
 
-    act(() => {
-      result.current.handleBlur({
-        relatedTarget: inner,
-      } as unknown as React.FocusEvent<HTMLElement>)
-    })
+    result.current.handleBlur(focusEvent(inner))
     expect(onBlur).not.toHaveBeenCalled()
     root.remove()
+  })
+
+  it('clears a live hover preview when focus leaves', async () => {
+    const onHoverChange = vi.fn()
+    const { result } = await renderHook(() =>
+      useRating({ value: 1, onChange: () => undefined, onHoverChange }),
+    )
+    result.current.setHover(4)
+    await expect.poll(() => result.current.hoverValue).toBe(4)
+
+    result.current.handleBlur(focusEvent(null))
+    await expect.poll(() => result.current.hoverValue).toBeNull()
+    expect(onHoverChange).toHaveBeenLastCalledWith(null)
   })
 })
