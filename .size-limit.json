@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Rating (full import)",
+    "path": "dist/index.mjs",
+    "import": "{ Rating }",
+    "limit": "3 kB",
+    "ignore": ["react", "react/jsx-runtime"]
+  },
+  {
+    "name": "useRating (headless only)",
+    "path": "dist/index.mjs",
+    "import": "{ useRating }",
+    "limit": "1.25 kB",
+    "ignore": ["react", "react/jsx-runtime"]
+  }
+]

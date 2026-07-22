@@ -1,0 +1,271 @@
+import type { CSSProperties, ReactNode } from 'react'
+import { useRating } from './useRating'
+import { usePrefersReducedMotion } from './usePrefersReducedMotion'
+import type { RatingIcon, RatingIconState, RatingProps } from './types'
+
+const DEFAULT_STAR = (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+    <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.46L12 17.31l-5.8 3.05 1.1-6.46-4.69-4.58 6.49-.94L12 2.5z" />
+  </svg>
+)
+
+// Only layout-critical declarations are inlined. Everything visual is a CSS
+// custom property so there is no stylesheet to import (design pillar 3).
+const rootStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 'var(--rfs-gap, 0.125rem)',
+  position: 'relative',
+  lineHeight: 1,
+}
+
+const itemStyle: CSSProperties = {
+  // font-size drives the box so emoji, which size by font-size rather than
+  // width/height, scale identically to SVG (§4.1).
+  fontSize: 'var(--rfs-size, 1.25rem)',
+  lineHeight: 1,
+  position: 'relative',
+  display: 'inline-block',
+  width: '1em',
+  height: '1em',
+  flexShrink: 0,
+}
+
+const layerBase: CSSProperties = {
+  position: 'absolute',
+  insetBlockStart: 0,
+  // Logical property: RTL flips the fill origin with no extra branching.
+  insetInlineStart: 0,
+  height: '1em',
+  display: 'block',
+}
+
+/** Locked to the item width so clipping *reveals* the icon instead of squashing it. */
+const innerStyle: CSSProperties = {
+  display: 'block',
+  width: '1em',
+  height: '1em',
+}
+
+function renderIcon(icon: RatingIcon | undefined, state: RatingIconState, fallback: ReactNode) {
+  if (icon === undefined) return fallback
+  return typeof icon === 'function' ? icon(state) : icon
+}
+
+export function Rating(props: RatingProps) {
+  const {
+    icon,
+    emptyIcon,
+    className,
+    style,
+    dir,
+    label,
+    formatLabel,
+    formatOptionLabel,
+    invalid,
+    required,
+    disabled = false,
+    precision = 0,
+    'aria-describedby': describedBy,
+    ref,
+  } = props
+
+  const reducedMotion = usePrefersReducedMotion()
+  const rating = useRating(props)
+  const {
+    max,
+    value,
+    displayValue,
+    fills,
+    steps,
+    interactive,
+    focusedValue,
+    name,
+    baseId,
+    rootRef,
+    select,
+    setHover,
+    setFocused,
+    handleBlur,
+  } = rating
+
+  // An explicit emptyIcon is the consumer's own artwork, so leave it alone.
+  // The implicit one is the same glyph and must be dimmed to be legible as a
+  // track — by filter, not colour, because colour is a no-op on emoji (§4.1).
+  const dimEmpty = emptyIcon === undefined
+  const stepsPerItem = precision > 0 ? Math.max(1, Math.round(1 / precision)) : 1
+
+  const accessibleName =
+    label ?? formatLabel?.(value, max) ?? `${String(value)} out of ${String(max)}`
+
+  const items = fills.map((fill, index) => {
+    const active = interactive && displayValue > index
+    const state: RatingIconState = {
+      index,
+      fill,
+      filled: fill >= 1,
+      empty: fill <= 0,
+      partial: fill > 0 && fill < 1,
+      active,
+    }
+    const filledNode = renderIcon(icon, state, DEFAULT_STAR)
+    const emptyNode = renderIcon(emptyIcon ?? icon, state, DEFAULT_STAR)
+
+    const itemSteps = interactive
+      ? steps.filter((s) => s > index && s <= index + 1 + Number.EPSILON)
+      : []
+    const isFocusedItem = focusedValue !== null && focusedValue > index && focusedValue <= index + 1
+
+    return (
+      <span
+        key={index}
+        data-rfs-item={index}
+        data-state={state.filled ? 'full' : state.empty ? 'empty' : 'partial'}
+        {...(active ? { 'data-active': '' } : {})}
+        style={{
+          ...itemStyle,
+          ...(isFocusedItem
+            ? {
+                outline: 'var(--rfs-focus-ring, 2px solid Highlight)',
+                outlineOffset: 'var(--rfs-focus-ring-offset, 2px)',
+                borderRadius: 'var(--rfs-focus-ring-radius, 2px)',
+              }
+            : {}),
+        }}
+      >
+        <span
+          data-rfs-layer="empty"
+          aria-hidden="true"
+          style={{
+            ...layerBase,
+            width: '1em',
+            color: 'var(--rfs-color-empty, #d8d8d8)',
+            ...(dimEmpty ? { filter: 'var(--rfs-empty-filter, grayscale(1) opacity(0.35))' } : {}),
+          }}
+        >
+          <span style={innerStyle}>{emptyNode}</span>
+        </span>
+
+        <span
+          data-rfs-layer="fill"
+          aria-hidden="true"
+          style={{
+            ...layerBase,
+            width: `${String(fill * 100)}%`,
+            overflow: 'hidden',
+            color: active
+              ? 'var(--rfs-color-hover, var(--rfs-color-filled, #f5a623))'
+              : 'var(--rfs-color-filled, #f5a623)',
+            transition: reducedMotion ? 'none' : 'width var(--rfs-transition, 120ms) ease',
+          }}
+        >
+          <span style={innerStyle}>{filledNode}</span>
+        </span>
+
+        {itemSteps.map((stepValue, k) => {
+          const width = 100 / stepsPerItem
+          return (
+            <label
+              key={stepValue}
+              style={{
+                position: 'absolute',
+                insetBlockStart: 0,
+                insetBlockEnd: 0,
+                insetInlineStart: `${String(k * width)}%`,
+                width: `${String(width)}%`,
+                cursor: disabled ? 'not-allowed' : 'pointer',
+              }}
+              onPointerEnter={(e) => {
+                if (e.pointerType === 'touch') return
+                setHover(stepValue)
+              }}
+            >
+              <input
+                type="radio"
+                id={`${baseId}-${String(stepValue)}`}
+                name={name}
+                value={stepValue}
+                checked={value === stepValue}
+                disabled={disabled}
+                required={required && stepValue === steps[0]}
+                aria-label={
+                  formatOptionLabel?.(stepValue, max) ?? `${String(stepValue)} of ${String(max)}`
+                }
+                onChange={() => {
+                  select(stepValue)
+                }}
+                onClick={(e) => {
+                  // A checked radio fires click but not change, so the
+                  // clear-on-reselect path has to live here.
+                  if (value === stepValue) select(stepValue)
+                  e.stopPropagation()
+                }}
+                onFocus={(e) => {
+                  setFocused(e.currentTarget.matches(':focus-visible') ? stepValue : null)
+                }}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  margin: 0,
+                  opacity: 0,
+                  cursor: 'inherit',
+                }}
+              />
+            </label>
+          )
+        })}
+      </span>
+    )
+  })
+
+  const shared = {
+    ref: (node: HTMLSpanElement | null) => {
+      rootRef.current = node
+      if (typeof ref === 'function') ref(node)
+      else if (ref) ref.current = node
+    },
+    className,
+    dir,
+    style: { ...rootStyle, ...style },
+    'data-rfs-root': '',
+    ...(disabled ? { 'data-disabled': '' } : {}),
+    ...(invalid ? { 'data-invalid': '' } : {}),
+  }
+
+  if (!interactive) {
+    return (
+      <span
+        {...shared}
+        role="img"
+        aria-label={accessibleName}
+        {...(disabled ? {} : {})}
+        data-readonly=""
+      >
+        {items}
+      </span>
+    )
+  }
+
+  return (
+    <span
+      {...shared}
+      role="radiogroup"
+      aria-label={accessibleName}
+      aria-required={required ? true : undefined}
+      aria-invalid={invalid ? true : undefined}
+      aria-describedby={describedBy}
+      aria-disabled={disabled ? true : undefined}
+      // §9.5 — makes ref.current.focus() work for RHF setFocus() and
+      // focus-first-error patterns. Not in the tab order.
+      tabIndex={-1}
+      onBlur={handleBlur}
+      onPointerLeave={() => {
+        setHover(null)
+      }}
+    >
+      {items}
+    </span>
+  )
+}

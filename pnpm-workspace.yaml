@@ -1,0 +1,6 @@
+# Not a monorepo — pnpm 11 keeps install policy here rather than in package.json.
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@vitejs/plugin-react@6.0.4'
+  - lint-staged@17.1.1
