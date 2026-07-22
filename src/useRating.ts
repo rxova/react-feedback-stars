@@ -39,7 +39,12 @@ export interface UseRatingResult {
   focusedValue: number | null
   name: string
   baseId: string
-  rootRef: React.RefObject<HTMLSpanElement | null>
+  /**
+   * Structural rather than `RefObject`: in @types/react 18 `RefObject.current`
+   * is readonly, in 19 it is mutable. Declaring the shape keeps this assignable
+   * under both, which matters because `react >= 18` is a peer.
+   */
+  rootRef: { current: HTMLSpanElement | null }
   /** Commit a value verbatim (keyboard entry). */
   commit: (next: number) => void
   /** Pointer semantics: re-selecting the current value clears it. */

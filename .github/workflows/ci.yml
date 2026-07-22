@@ -74,7 +74,9 @@ jobs:
         id: pw-cache
         with:
           path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
-          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}
+          # Scoped to chromium: the e2e job caches all three engines, and a
+          # shared key would let this job's narrower cache satisfy it.
+          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium
       - name: Install Chromium
         if: steps.pw-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
@@ -107,13 +109,16 @@ jobs:
         id: pw-cache
         with:
           path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
-          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}
-      - name: Install Chromium
+          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}-all
+      # All three engines. This component is geometry -- CSS logical properties
+      # for RTL, overflow clipping, filters on emoji, :focus-visible -- so one
+      # engine is not evidence that it renders correctly.
+      - name: Install browsers
         if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
       - name: Install system dependencies only
         if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: pnpm exec playwright install-deps chromium
+        run: pnpm exec playwright install-deps chromium firefox webkit
 
       - run: pnpm run e2e
       - name: Upload Playwright report
@@ -125,6 +130,34 @@ jobs:
             playwright-report
             test-results
           if-no-files-found: ignore
+
+  # The peer range allows React 18, but the lockfile only ever installs 19, so
+  # without this the minimum supported version is an untested claim. Separate
+  # from the matrix because it has to rewrite the React version, which
+  # --frozen-lockfile forbids.
+  react-minimum:
+    name: react 18
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Resolve Playwright version
+        id: pw
+        run: echo "version=$(node -p "require('./node_modules/playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v6
+        id: pw-cache
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: pw-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium
+      - name: Install Chromium
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Install system dependencies only
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+      - name: Install the minimum supported React and re-run
+        run: pnpm run test:react-min
 
   package:
     name: package contract

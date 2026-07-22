@@ -80,7 +80,11 @@ try {
         private: true,
         version: '1.0.0',
         type: 'module',
-        dependencies: { 'react-feedback-stars': `file:${tarballPath}`, react: '^19.0.0' },
+        dependencies: {
+          'react-feedback-stars': `file:${tarballPath}`,
+          react: '^19.0.0',
+          'react-dom': '^19.0.0',
+        },
       },
       null,
       2,
@@ -94,18 +98,30 @@ try {
   console.log('\nResolving through both module systems…')
   writeFileSync(
     join(consumer, 'esm.mjs'),
-    `import { Rating, useRating } from 'react-feedback-stars'
-if (typeof Rating !== 'function') throw new Error('ESM: Rating is not a function')
+    `import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { Rating, useRating } from 'react-feedback-stars'
+
+// Rating is a forwardRef component, so it is an object rather than a plain
+// function. Asserting on typeof would only re-encode that detail; rendering it
+// proves the published artifact actually works.
+const html = renderToStaticMarkup(createElement(Rating, { value: 4.3 }))
+if (!html.includes('data-rfs-root')) throw new Error('ESM: did not render the root')
+if (!html.includes('width:30%')) throw new Error('ESM: partial fill missing, got ' + html.slice(0, 200))
 if (typeof useRating !== 'function') throw new Error('ESM: useRating is not a function')
-console.log('  ✔ ESM import')
+console.log('  ✔ ESM import renders')
 `,
   )
   writeFileSync(
     join(consumer, 'cjs.cjs'),
-    `const { Rating, useRating } = require('react-feedback-stars')
-if (typeof Rating !== 'function') throw new Error('CJS: Rating is not a function')
+    `const { createElement } = require('react')
+const { renderToStaticMarkup } = require('react-dom/server')
+const { Rating, useRating } = require('react-feedback-stars')
+
+const html = renderToStaticMarkup(createElement(Rating, { value: 4.3 }))
+if (!html.includes('data-rfs-root')) throw new Error('CJS: did not render the root')
 if (typeof useRating !== 'function') throw new Error('CJS: useRating is not a function')
-console.log('  ✔ CJS require')
+console.log('  ✔ CJS require renders')
 `,
   )
   execFileSync('node', ['esm.mjs'], { cwd: consumer, stdio: 'inherit' })

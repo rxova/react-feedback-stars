@@ -1,4 +1,4 @@
-import type { CSSProperties, FocusEvent, ReactNode, Ref } from 'react'
+import type { CSSProperties, FocusEvent, ReactNode } from 'react'
 
 /** How a value snaps onto the `precision` grid. See the rounding table in the README. */
 export type RatingRounding = 'nearest' | 'down' | 'up' | 'none'
@@ -78,5 +78,4 @@ export interface RatingProps {
 
   className?: string
   style?: CSSProperties
-  ref?: Ref<HTMLSpanElement>
 }
