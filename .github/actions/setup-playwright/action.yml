@@ -23,14 +23,17 @@ runs:
         echo "version=$(node -p "require('./node_modules/playwright/package.json').version")" >> "$GITHUB_OUTPUT"
         echo "slug=$(echo '${{ inputs.browsers }}' | tr ' ' '-' | sed 's/^$/all/')" >> "$GITHUB_OUTPUT"
 
+    # Deliberately outside the checkout. Downloading browsers into the
+    # workspace put Chromium's bundled manifest.json and inspector JS in front
+    # of `prettier --check .`, which failed the release on 14 vendored files.
     - name: Export browser path
       shell: bash
-      run: echo "PLAYWRIGHT_BROWSERS_PATH=${{ github.workspace }}/.pw-browsers" >> "$GITHUB_ENV"
+      run: echo "PLAYWRIGHT_BROWSERS_PATH=${{ runner.temp }}/pw-browsers" >> "$GITHUB_ENV"
 
     - uses: actions/cache@v6
       id: pw-cache
       with:
-        path: ${{ github.workspace }}/.pw-browsers
+        path: ${{ runner.temp }}/pw-browsers
         # The browser set is part of the key: without it a chromium-only cache
         # would satisfy a job that needs all three, and the run would fail at
         # launch with "Executable doesn't exist".

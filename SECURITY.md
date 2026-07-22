@@ -72,5 +72,7 @@ compatible — please open an issue, as a class-based rendering mode is a plausi
   via OIDC trusted publishing, so there is no long-lived npm token to leak.
 - `pnpm audit --audit-level=high` runs inside `pnpm run verify`, which gates both pull requests
   and the release path.
-- CodeQL analysis runs on every push, every pull request, and weekly.
+- CodeQL analysis runs via GitHub's default code-scanning setup, which keeps its own queries
+  and CodeQL version current. There is deliberately no advanced workflow in this repository:
+  GitHub rejects SARIF uploads when both are enabled.
 - Dependency updates arrive through Dependabot and go through the same CI gate.

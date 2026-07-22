@@ -12,6 +12,8 @@ export default defineConfig(
     'playground/dist/',
     'test-results/',
     'playwright-report/',
+    '.pw-browsers/',
+    'pw-browsers/',
     '**/__screenshots__/',
   ]),
   js.configs.recommended,

@@ -14,3 +14,5 @@ coverage/
 playground/dist/
 test-results/
 playwright-report/
+.pw-browsers/
+pw-browsers/
