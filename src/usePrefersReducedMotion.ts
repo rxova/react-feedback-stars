@@ -7,14 +7,21 @@ const QUERY = '(prefers-reduced-motion: reduce)'
  * jsdom omits it, and plenty of consumers still run their own suites there.
  * Reaching for it through an optional shape keeps the guard real without a
  * lint suppression.
+ *
+ * The `typeof window` arm is not reachable through <Rating>: useSyncExternalStore
+ * uses getServerSnapshot on the server, so this only ever runs client-side. It
+ * stays for non-DOM renderers (react-test-renderer in node), and is covered by
+ * a direct unit test rather than through the component.
  */
-function getMatchMedia(): ((query: string) => MediaQueryList) | undefined {
+/** @internal Exported for tests; not part of the public API (see index.ts). */
+export function getMatchMedia(): ((query: string) => MediaQueryList) | undefined {
   if (typeof window === 'undefined') return undefined
   const { matchMedia } = window as { matchMedia?: (query: string) => MediaQueryList }
   return matchMedia?.bind(window)
 }
 
-function subscribe(onChange: () => void): () => void {
+/** @internal */
+export function subscribe(onChange: () => void): () => void {
   const mql = getMatchMedia()?.(QUERY)
   if (!mql) return () => undefined
   mql.addEventListener('change', onChange)
@@ -23,7 +30,8 @@ function subscribe(onChange: () => void): () => void {
   }
 }
 
-function getSnapshot(): boolean {
+/** @internal */
+export function getSnapshot(): boolean {
   return getMatchMedia()?.(QUERY).matches ?? false
 }
 

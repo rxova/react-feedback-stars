@@ -30,8 +30,11 @@ export interface UseRatingResult {
   fills: number[]
   /** Selectable grid values. */
   steps: number[]
-  /** True when the component accepts input. */
+  /** True when the component renders as a control rather than an image. */
   interactive: boolean
+  /** True when the control will actually accept input (interactive and not disabled). */
+  canChange: boolean
+  disabled: boolean
   hoverValue: number | null
   focusedValue: number | null
   name: string
@@ -81,7 +84,12 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
   const [focusedValue, setFocusedValue] = useState<number | null>(null)
   const rootRef = useRef<HTMLSpanElement | null>(null)
 
-  const interactive = (readOnly === undefined ? onChange !== undefined : !readOnly) && !disabled
+  // `disabled` deliberately does NOT clear `interactive`. A disabled control
+  // must still be exposed as a disabled control — degrading it to a plain
+  // image would hide the field from screen-reader users filling the form.
+  // `canChange` is what actually gates mutation.
+  const interactive = readOnly === undefined ? onChange !== undefined : !readOnly
+  const canChange = interactive && !disabled
 
   const value = useMemo(
     () => snap(clampValue(rawValue, max), precision, rounding),
@@ -95,12 +103,12 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
   /** Commit a value as-is. No toggle, no clear-on-reselect. */
   const commit = useCallback(
     (next: number) => {
-      if (!interactive) return
+      if (!canChange) return
       const committed = clampValue(next, max)
       if (!isControlled) setUncontrolled(committed)
       onChange?.(committed)
     },
-    [interactive, isControlled, max, onChange],
+    [canChange, isControlled, max, onChange],
   )
 
   /**
@@ -111,23 +119,23 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
    */
   const select = useCallback(
     (next: number) => {
-      if (!interactive) return
+      if (!canChange) return
       const requested = clampValue(next, max)
       commit(allowClear && requested === value ? 0 : requested)
     },
-    [allowClear, commit, interactive, max, value],
+    [allowClear, canChange, commit, max, value],
   )
 
   const setHover = useCallback(
     (next: number | null) => {
-      if (!interactive) return
+      if (!canChange) return
       setHoverValue((prev) => {
         if (prev === next) return prev
         onHoverChange?.(next)
         return next
       })
     },
-    [interactive, onHoverChange],
+    [canChange, onHoverChange],
   )
 
   const setFocused = useCallback((next: number | null) => {
@@ -161,6 +169,8 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
     fills,
     steps,
     interactive,
+    canChange,
+    disabled,
     hoverValue,
     focusedValue,
     name,

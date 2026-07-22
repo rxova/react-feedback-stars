@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { toPercent } from './math'
 import { useRating } from './useRating'
 import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 import type { RatingIcon, RatingIconState, RatingProps } from './types'
@@ -80,6 +81,7 @@ export function Rating(props: RatingProps) {
     fills,
     steps,
     interactive,
+    canChange,
     focusedValue,
     name,
     baseId,
@@ -101,7 +103,7 @@ export function Rating(props: RatingProps) {
     label ?? formatLabel?.(value, max) ?? `${String(value)} out of ${String(max)}`
 
   const items = fills.map((fill, index) => {
-    const active = interactive && displayValue > index
+    const active = canChange && displayValue > index
     const state: RatingIconState = {
       index,
       fill,
@@ -153,7 +155,7 @@ export function Rating(props: RatingProps) {
           aria-hidden="true"
           style={{
             ...layerBase,
-            width: `${String(fill * 100)}%`,
+            width: `${String(toPercent(fill))}%`,
             overflow: 'hidden',
             color: active
               ? 'var(--rfs-color-hover, var(--rfs-color-filled, #f5a623))'
@@ -238,13 +240,7 @@ export function Rating(props: RatingProps) {
 
   if (!interactive) {
     return (
-      <span
-        {...shared}
-        role="img"
-        aria-label={accessibleName}
-        {...(disabled ? {} : {})}
-        data-readonly=""
-      >
+      <span {...shared} role="img" aria-label={accessibleName} data-readonly="">
         {items}
       </span>
     )

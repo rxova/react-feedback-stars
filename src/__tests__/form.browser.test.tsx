@@ -4,7 +4,7 @@ import { render } from 'vitest-browser-react'
 import { Controller, useForm } from 'react-hook-form'
 import { useField, Formik, Form } from 'formik'
 import { Field, Form as RFFForm } from 'react-final-form'
-import { Rating } from './Rating'
+import { Rating } from '../Rating'
 
 /**
  * These assert the whole loop for each library: interact -> library state

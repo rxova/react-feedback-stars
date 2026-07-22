@@ -13,7 +13,9 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['src/**/*.test.ts'],
+          include: ['src/**/__tests__/**/*.test.ts', 'src/**/__tests__/**/*.test.tsx'],
+          // Browser specs are the other project's job.
+          exclude: ['src/**/__tests__/**/*.browser.test.tsx'],
         },
       },
       {
@@ -23,7 +25,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'browser',
-          include: ['src/**/*.browser.test.tsx'],
+          include: ['src/**/__tests__/**/*.browser.test.tsx'],
           browser: {
             enabled: true,
             provider: playwright(),
@@ -35,14 +37,19 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'text-summary', 'html', 'json-summary', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/**/*.test.*', 'src/index.ts', 'src/types.ts'],
+      // index.ts is a re-export barrel and types.ts is types only; neither has
+      // executable lines worth a threshold.
+      exclude: ['src/**/__tests__/**', 'src/index.ts', 'src/types.ts'],
       thresholds: {
-        lines: 90,
-        functions: 90,
-        branches: 85,
-        // math.ts is pure and it is the product; it gets no slack.
-        'src/math.ts': { lines: 100, functions: 100, branches: 100, statements: 100 },
+        // perFile, so one thinly covered module cannot hide behind a
+        // well-covered one in the aggregate.
+        perFile: true,
+        statements: 95,
+        branches: 95,
+        functions: 95,
+        lines: 95,
       },
     },
   },

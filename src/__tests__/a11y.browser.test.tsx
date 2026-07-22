@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { page, userEvent } from '@vitest/browser/context'
 import { render } from 'vitest-browser-react'
-import { Rating } from './Rating'
+import { Rating } from '../Rating'
 
 describe('read-only semantics', () => {
   it('is an image conveying a value, not a control', async () => {
@@ -93,10 +93,24 @@ describe('interactive semantics', () => {
     await expect.element(group).toHaveAttribute('data-invalid')
   })
 
-  it('marks a disabled group aria-disabled and blocks its inputs', async () => {
+  it('stays a radiogroup when disabled rather than degrading to an image', async () => {
+    // A disabled control must still be announced as a disabled control. If it
+    // collapsed to role="img", a screen-reader user filling the form would
+    // never learn the field exists.
+    await render(
+      <Rating value={2} onChange={() => undefined} precision={1} disabled label="Rate" />,
+    )
+    await expect.element(page.getByRole('radiogroup', { name: 'Rate' })).toBeInTheDocument()
+    await expect.element(page.getByRole('radiogroup')).toHaveAttribute('aria-disabled', 'true')
+    await expect.element(page.getByRole('radiogroup')).toHaveAttribute('data-disabled')
+    for (const radio of page.getByRole('radio').elements()) {
+      expect(radio).toBeDisabled()
+    }
+  })
+
+  it('still exposes the selected value when disabled', async () => {
     await render(<Rating value={2} onChange={() => undefined} precision={1} disabled />)
-    // Disabled is not interactive at all, so it falls back to the image role.
-    await expect.element(page.getByRole('img')).toBeInTheDocument()
+    await expect.element(page.getByRole('radio', { name: '2 of 5' })).toBeChecked()
   })
 
   it('renders a visible focus indicator on the focused icon', async () => {

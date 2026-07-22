@@ -82,9 +82,23 @@ export function getFills(value: number, max: number): number[] {
   const fills: number[] = new Array<number>(max)
   for (let i = 0; i < max; i++) {
     const f = value - i
-    fills[i] = f <= 0 ? 0 : f >= 1 ? 1 : f
+    // `4.3 - 4` is 0.29999999999999982. Left alone that dust reaches both the
+    // rendered style attribute and `RatingIconState.fill`, so clean it here at
+    // the source rather than at each use site.
+    fills[i] = f <= 0 ? 0 : f >= 1 ? 1 : Math.round(f * 1e10) / 1e10
   }
   return fills
+}
+
+/**
+ * A fill ratio as a CSS percentage number, rounded to two decimals.
+ *
+ * Emitted into a `style` attribute for every icon, so an unrounded value costs
+ * ~15 extra characters per icon in the SSR payload and gives the client a
+ * different string to reconcile against.
+ */
+export function toPercent(fill: number): number {
+  return Math.round(fill * 1e4) / 1e2
 }
 
 /**

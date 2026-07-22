@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { clampValue, decimalPlaces, getFills, getSteps, normalizeMax, snap } from './math'
-import type { RatingRounding } from './types'
+import {
+  clampValue,
+  decimalPlaces,
+  getFills,
+  getSteps,
+  normalizeMax,
+  snap,
+  toPercent,
+} from '../math'
+import type { RatingRounding } from '../types'
 
 describe('clampValue', () => {
   it.each([
@@ -133,7 +141,7 @@ describe('snap — degenerate inputs', () => {
 
 describe('getFills', () => {
   it('splits a partial score across icons', () => {
-    expect(getFills(4.3, 5)).toEqual([1, 1, 1, 1, expect.closeTo(0.3, 10)])
+    expect(getFills(4.3, 5)).toEqual([1, 1, 1, 1, 0.3])
   })
 
   it.each([
@@ -180,5 +188,50 @@ describe('getSteps', () => {
 
   it('produces clean decimals at tenths', () => {
     expect(getSteps(1, 0.1)).toEqual([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+  })
+})
+
+describe('decimalPlaces — exponential notation', () => {
+  it('handles an exponential mantissa that carries its own decimals', () => {
+    // String(1.5e-7) is "1.5e-7": one mantissa decimal plus a 7-place exponent.
+    expect(decimalPlaces(1.5e-7)).toBe(8)
+    expect(decimalPlaces(1.25e-7)).toBe(9)
+  })
+
+  it('handles a positive exponent', () => {
+    expect(decimalPlaces(1e21)).toBe(0)
+  })
+})
+
+describe('toPercent', () => {
+  it('strips float dust from the emitted style value', () => {
+    // 4.3 - 4 is 0.29999999999999982, which would otherwise reach the DOM.
+    expect(toPercent(4.3 - 4)).toBe(30)
+    expect(toPercent(0.1 + 0.2)).toBe(30)
+  })
+
+  it.each([
+    [0, 0],
+    [1, 100],
+    [0.5, 50],
+    [0.333333333, 33.33],
+    [0.125, 12.5],
+  ])('toPercent(%p) -> %p', (fill, expected) => {
+    expect(toPercent(fill)).toBe(expected)
+  })
+
+  it('never emits more than two decimals', () => {
+    for (let i = 0; i <= 100; i++) {
+      const s = String(toPercent(i / 300))
+      const dot = s.indexOf('.')
+      if (dot !== -1) expect(s.length - dot - 1).toBeLessThanOrEqual(2)
+    }
+  })
+})
+
+describe('getFills — dust', () => {
+  it('returns a clean fractional fill', () => {
+    expect(getFills(4.3, 5)[4]).toBe(0.3)
+    expect(getFills(2.1, 3)[2]).toBe(0.1)
   })
 })

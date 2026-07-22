@@ -54,7 +54,8 @@
     "prepack": "pnpm build",
     "prepare": "husky",
     "release": "pnpm build && changeset publish",
-    "size": "size-limit"
+    "size": "size-limit",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

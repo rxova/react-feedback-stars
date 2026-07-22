@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { page, userEvent } from '@vitest/browser/context'
 import { render } from 'vitest-browser-react'
-import { Rating } from './Rating'
+import { Rating } from '../Rating'
 
 /**
  * Measured fill ratio for one icon, from real layout rather than markup.
@@ -223,9 +223,33 @@ describe('interaction', () => {
 
   it('ignores input when disabled', async () => {
     const onChange = vi.fn()
-    await render(<Rating value={2} onChange={onChange} precision={1} disabled />)
-    await expect.element(page.getByRole('img')).toBeInTheDocument()
+    const { container } = await render(
+      <Rating value={2} onChange={onChange} precision={1} disabled />,
+    )
+    await expect.element(page.getByRole('radiogroup')).toBeInTheDocument()
+
+    // Disabled inputs swallow clicks natively; assert nothing commits and the
+    // paint does not preview either.
+    await page.getByRole('radio', { name: '4 of 5' }).click({ force: true })
     expect(onChange).not.toHaveBeenCalled()
+    expect(fillRatio(container, 3)).toBeCloseTo(0, 2)
+  })
+
+  it('does not hover-preview when disabled', async () => {
+    const onHoverChange = vi.fn()
+    const { container } = await render(
+      <Rating
+        value={1}
+        onChange={() => undefined}
+        onHoverChange={onHoverChange}
+        precision={1}
+        disabled
+      />,
+    )
+    await expect.element(page.getByRole('radiogroup')).toBeInTheDocument()
+    await page.getByRole('radio', { name: '4 of 5' }).hover({ force: true })
+    expect(onHoverChange).not.toHaveBeenCalled()
+    expect(fillRatio(container, 3)).toBeCloseTo(0, 2)
   })
 
   it('honours readOnly even with onChange present', async () => {
@@ -268,5 +292,80 @@ describe('keyboard', () => {
     // A radiogroup is a single tab stop, not five.
     await userEvent.tab()
     await expect.element(page.getByRole('button', { name: 'after' })).toHaveFocus()
+  })
+})
+
+describe('uncovered API surface', () => {
+  it('accepts a render function for icon and gets per-icon state', async () => {
+    const seen: { index: number; fill: number; partial: boolean }[] = []
+    const { container } = await render(
+      <Rating
+        value={2.5}
+        icon={(s) => {
+          seen.push({ index: s.index, fill: s.fill, partial: s.partial })
+          return <b data-fill={s.fill}>{s.partial ? 'P' : s.filled ? 'F' : 'E'}</b>
+        }}
+      />,
+    )
+    await expect.element(page.getByRole('img')).toBeInTheDocument()
+
+    expect(seen.map((s) => s.index)).toEqual(expect.arrayContaining([0, 1, 2, 3, 4]))
+    expect(seen.find((s) => s.index === 2)?.partial).toBe(true)
+    expect(seen.find((s) => s.index === 0)?.fill).toBe(1)
+    expect(fillRatio(container, 2)).toBeCloseTo(0.5, 2)
+  })
+
+  it('accepts a render function for emptyIcon', async () => {
+    const { container } = await render(
+      <Rating value={1} icon={<b>F</b>} emptyIcon={(s) => <i data-idx={s.index}>E</i>} />,
+    )
+    await expect.element(page.getByRole('img')).toBeInTheDocument()
+    expect(container.querySelectorAll('i[data-idx]')).toHaveLength(5)
+  })
+
+  it('populates an object ref as well as a callback ref', async () => {
+    const objectRef = { current: null as HTMLSpanElement | null }
+    await render(<Rating value={3} ref={objectRef} />)
+    await expect.element(page.getByRole('img')).toBeInTheDocument()
+    expect(objectRef.current).toBeInstanceOf(HTMLElement)
+    expect(objectRef.current).toHaveAttribute('data-rfs-root')
+  })
+
+  it('ignores touch pointers for hover preview', async () => {
+    const onHoverChange = vi.fn()
+    const { container } = await render(
+      <>
+        <h1>away</h1>
+        <Rating value={1} onChange={() => undefined} onHoverChange={onHoverChange} precision={1} />
+      </>,
+    )
+    await expect.element(page.getByRole('radiogroup')).toBeInTheDocument()
+    // Park the real cursor off the widget first, or its genuine pointerenter
+    // fires alongside the synthetic events below.
+    await page.getByRole('heading', { name: 'away' }).hover()
+    onHoverChange.mockClear()
+    const label = container.querySelectorAll<HTMLElement>('label')[3]!
+
+    // A touch "hover" would leave a sticky preview after the finger lifts, so
+    // the handler bails on pointerType touch. React derives onPointerEnter
+    // from pointerover, which is why this dispatches that rather than the
+    // non-bubbling pointerenter.
+    label.dispatchEvent(new PointerEvent('pointerover', { pointerType: 'touch', bubbles: true }))
+    expect(onHoverChange).not.toHaveBeenCalled()
+
+    // A real mouse over the same target does preview.
+    await page.getByRole('radio', { name: '4 of 5' }).hover()
+    expect(onHoverChange).toHaveBeenCalledWith(4)
+  })
+
+  it('leaves modifier-key combinations to the browser', async () => {
+    const onChange = vi.fn()
+    await render(<Rating value={1} onChange={onChange} precision={1} />)
+    await page.getByRole('radio', { name: '1 of 5' }).click()
+    onChange.mockClear()
+
+    // Ctrl+4 etc. belong to the user agent, not to us.
+    await userEvent.keyboard('{Control>}4{/Control}')
+    expect(onChange).not.toHaveBeenCalled()
   })
 })
