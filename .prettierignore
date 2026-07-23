@@ -1,8 +1,13 @@
-dist/
+**/dist/
 coverage/
 pnpm-lock.yaml
-CHANGELOG.md
+**/CHANGELOG.md
 **/__screenshots__/
+
+# Docusaurus build output and TypeDoc-generated API reference.
+apps/docs/build/
+apps/docs/.docusaurus/
+apps/docs/docs/api/
 
 # Playwright browser binaries, if PLAYWRIGHT_BROWSERS_PATH points inside the repo.
 .pw-browsers/

@@ -52,7 +52,10 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Confirm the Node under test
         run: node --version
+      # vitest is a devDependency of the library package, so its binary lives in
+      # that package's node_modules, not the workspace root.
       - run: ./node_modules/.bin/vitest run --project unit
+        working-directory: packages/react-feedback-stars
 
   browser:
     name: browser + coverage
