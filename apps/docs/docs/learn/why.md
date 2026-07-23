@@ -19,7 +19,7 @@ _geometry_ and _semantics_ — and hands appearance entirely to you.
 ## Exact fractional geometry
 
 A score like `4.3` is drawn as four full icons and a fifth icon clipped to **30% width** with a CSS
-overflow layer. The fill is a real measurement, not one of a few baked-in states, so any value in
+overflow layer. The fill is an exact measurement, not one of a few baked-in states, so any value in
 `[0, max]` renders precisely. Because the fill is a width clip over whatever icon you pass, it works
 identically for SVG, emoji, an `<img>`, or arbitrary JSX.
 
@@ -40,7 +40,7 @@ data; rendering it should never take down the page around it.
 | Interactive | `role="radiogroup"` of native radios; one tab stop; arrow-key nav |
 
 Providing `onChange` is the _only_ thing that flips read-only into interactive. Because interactive
-mode renders **real, visually-hidden radio inputs**, keyboard navigation, focus-visible, form
+mode renders **native, visually-hidden radio inputs**, keyboard navigation, focus-visible, form
 participation, and screen-reader announcements come from the browser — not from JavaScript that has
 to reimplement them (imperfectly). Details in [Accessibility](../guides/accessibility.md).
 
@@ -52,7 +52,7 @@ to reimplement them (imperfectly). Details in [Accessibility](../guides/accessib
 - **~2.5 kB brotli** for the full component; `useRating` is ~900 B on its own for a fully custom
   renderer.
 - Dual ESM/CJS with correct types in both, verified in CI by `publint` and
-  `@arethetypeswrong/cli`, plus a real pack-and-import smoke test.
+  `@arethetypeswrong/cli`, plus a pack-and-import smoke test.
 
 The result is a component you can adopt in a design system without inheriting a design, and drop
 into a production form without auditing it for accessibility first.

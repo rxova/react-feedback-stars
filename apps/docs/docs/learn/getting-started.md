@@ -14,7 +14,7 @@ give it an `onChange`.
 
 1. **Accessibility is built in** — native radios in a radiogroup, keyboard support, RTL, form-error
    wiring, and tested screen-reader semantics.
-2. **Fractional display is exact and icon-agnostic** — `4.3` renders a real 30% fifth icon, with
+2. **Fractional display is exact and icon-agnostic** — `4.3` renders a 30%-filled fifth icon, with
    SVG, emoji, images, or custom JSX.
 3. **Zero runtime dependencies** and no stylesheet to import.
 4. It works as **both a read-only score and an interactive form control** — same component.
@@ -32,10 +32,10 @@ pnpm add react-feedback-stars     # or: npm i / yarn add / bun add
 ## Show a score
 
 The default is a read-only, **continuous** display — no rounding, no interaction. **Edit the code
-below** — every `live` example on this site renders for real (`Rating` is already imported):
+below** — every `live` example on this site renders and runs (`Rating` is already imported):
 
 ```tsx live
-<Rating value={4.3} /> // a real 30%-filled fifth star
+<Rating value={4.3} />
 ```
 
 That renders `role="img"` with an accessible label like _“4.3 out of 5”_, and it is not a tab stop.
@@ -43,7 +43,7 @@ See [Displaying a score](../guides/display.md) for precision, rounding, and cust
 
 ## Take a rating
 
-Provide `onChange` and the same component becomes an input — a `radiogroup` of real, keyboard-driven
+Provide `onChange` and the same component becomes an input — a `radiogroup` of native, keyboard-driven
 radios:
 
 ```tsx live
@@ -64,6 +64,7 @@ major form library — one line longer than a native input, and fully validated:
 - [React Hook Form](../recipes/react-hook-form.md)
 - [Formik](../recipes/formik.md)
 - [React Final Form](../recipes/react-final-form.md)
+- [TanStack Form](../recipes/tanstack-form.md)
 - [A plain `<form>`](../recipes/native-forms.md)
 
 ## Where to next

@@ -31,6 +31,7 @@ Each library has a dedicated, complete recipe:
 - **[React Hook Form](../recipes/react-hook-form.md)** — `Controller` + `rules`
 - **[Formik](../recipes/formik.md)** — `useField` + helpers
 - **[React Final Form](../recipes/react-final-form.md)** — `Field` render prop
+- **[TanStack Form](../recipes/tanstack-form.md)** — `form.Field` + validators
 - **[Native `<form>`](../recipes/native-forms.md)** — no library, posts via `name`
 
 ## The shape they share

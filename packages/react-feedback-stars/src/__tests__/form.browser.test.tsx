@@ -4,6 +4,7 @@ import { render } from 'vitest-browser-react'
 import { Controller, useForm } from 'react-hook-form'
 import { useField, Formik, Form } from 'formik'
 import { Field, Form as RFFForm } from 'react-final-form'
+import { useForm as useTanstackForm } from '@tanstack/react-form'
 import { Rating } from '../Rating'
 
 /**
@@ -195,6 +196,70 @@ describe('react-final-form', () => {
         expect.anything(),
       )
     })
+  })
+})
+
+describe('tanstack form', () => {
+  function TanstackHarness({ onValid }: { onValid: (v: { rating: number }) => void }) {
+    const form = useTanstackForm({
+      defaultValues: { rating: 0 },
+      onSubmit: ({ value }) => {
+        onValid(value)
+      },
+    })
+    return (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          void form.handleSubmit()
+        }}
+      >
+        <form.Field
+          name="rating"
+          validators={{ onChange: ({ value }) => (value < 1 ? 'Please rate' : undefined) }}
+        >
+          {(field) => (
+            <>
+              <Rating
+                name="rating"
+                value={field.state.value}
+                onChange={(v) => {
+                  field.handleChange(v)
+                }}
+                onBlur={field.handleBlur}
+                precision={0.5}
+                invalid={!field.state.meta.isValid}
+                aria-describedby={field.state.meta.isValid ? undefined : 'rating-err'}
+              />
+              {!field.state.meta.isValid && (
+                <p id="rating-err">{field.state.meta.errors.join(', ')}</p>
+              )}
+            </>
+          )}
+        </form.Field>
+        <button type="submit">Send</button>
+      </form>
+    )
+  }
+
+  it('drives tanstack state and submits the selected value', async () => {
+    const onValid = vi.fn()
+    await render(<TanstackHarness onValid={onValid} />)
+    await page.getByRole('radio', { name: '3.5 of 5' }).click()
+    await page.getByRole('button', { name: 'Send' }).click()
+    await vi.waitFor(() => {
+      expect(onValid).toHaveBeenCalledWith({ rating: 3.5 })
+    })
+  })
+
+  it('surfaces a validation error and links it to the group', async () => {
+    await render(<TanstackHarness onValid={vi.fn()} />)
+    await page.getByRole('button', { name: 'Send' }).click()
+    await expect.element(page.getByText('Please rate')).toBeInTheDocument()
+    await expect
+      .element(page.getByRole('radiogroup'))
+      .toHaveAttribute('aria-describedby', 'rating-err')
+    await expect.element(page.getByRole('radiogroup')).toHaveAttribute('aria-invalid', 'true')
   })
 })
 

@@ -33,8 +33,7 @@ Re-verify before relying on these details.
 
 ```tsx
 // Before — react-stars
-import ReactStars from 'react-stars'
-;<ReactStars
+<ReactStars
   count={5}
   value={3.5}
   half
@@ -48,8 +47,7 @@ import ReactStars from 'react-stars'
 
 ```tsx
 // After — react-feedback-stars
-import { Rating } from 'react-feedback-stars'
-;<Rating
+<Rating
   max={5}
   value={3.5}
   precision={0.5}
@@ -67,7 +65,7 @@ glyph, pass `icon="●"` (or any node).
 
 ## What you gain
 
-- **Real accessibility.** Native radios in a `radiogroup` when interactive; `role="img"` when not.
+- **Genuine accessibility.** Native radios in a `radiogroup` when interactive; `role="img"` when not.
 - **Any icon, not one character.** SVG, images, emoji (including ZWJ sequences), and render
   functions — not just a single `char`.
 - **Exact continuous fills** and explicit `precision` × `rounding`, instead of whole/half only.

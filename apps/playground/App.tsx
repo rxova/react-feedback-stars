@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useForm as useTanstackForm } from '@tanstack/react-form'
 import { Rating } from 'react-feedback-stars'
 
 /**
@@ -120,6 +121,56 @@ function HookFormDemo() {
   )
 }
 
+function TanstackFormDemo() {
+  const [result, setResult] = useState<string | null>(null)
+  const form = useTanstackForm({
+    defaultValues: { rating: 0 },
+    onSubmit: ({ value }) => {
+      setResult(JSON.stringify(value))
+    },
+  })
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        void form.handleSubmit()
+      }}
+    >
+      <form.Field
+        name="rating"
+        validators={{
+          onChange: ({ value }) => (value < 1 ? 'Please rate before submitting' : undefined),
+        }}
+      >
+        {(field) => (
+          <>
+            <Rating
+              name="rating"
+              value={field.state.value}
+              onChange={(v) => {
+                field.handleChange(v)
+              }}
+              onBlur={field.handleBlur}
+              precision={0.5}
+              label="Overall"
+              invalid={!field.state.meta.isValid}
+              aria-describedby={field.state.meta.isValid ? undefined : 'tanstack-error'}
+            />
+            {!field.state.meta.isValid && (
+              <p id="tanstack-error" role="alert" className="error">
+                {field.state.meta.errors.join(', ')}
+              </p>
+            )}
+          </>
+        )}
+      </form.Field>
+      <button type="submit">Send review</button>
+      <output data-testid="tanstack-result">{result ?? 'not submitted'}</output>
+    </form>
+  )
+}
+
 export function App() {
   const [rtl, setRtl] = useState(false)
 
@@ -192,6 +243,10 @@ export function App() {
 
         <Section id="hook-form" title="React Hook Form" note="Controller + validation">
           <HookFormDemo />
+        </Section>
+
+        <Section id="tanstack-form" title="TanStack Form" note="form.Field + validation">
+          <TanstackFormDemo />
         </Section>
       </div>
     </main>

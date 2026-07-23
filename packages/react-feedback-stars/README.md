@@ -26,16 +26,16 @@ form recipes, theming, and migration from `react-rating` / `react-stars`.
 - **Bring your own icon** — SVG, emoji, image, arbitrary JSX
 - **Any precision** — continuous `4.3`, halves, tenths, or whole stars, with the rounding
   direction you choose
-- **Accessible** — real radios in a radiogroup when interactive, `role="img"` when not
+- **Accessible** — native radios in a radiogroup when interactive, `role="img"` when not
 - **Zero runtime dependencies**, ~2.3 kB brotli, no stylesheet to import
-- **Form-ready** — first-class React Hook Form / Formik / React Final Form integration
+- **Form-ready** — first-class React Hook Form / Formik / React Final Form / TanStack Form integration
 
 ## Display
 
 ```tsx
 import { Rating } from 'react-feedback-stars'
 
-<Rating value={4.3} />                       // continuous — a real 30% fifth star
+<Rating value={4.3} />                       // continuous — a 30%-filled fifth star
 <Rating value={4.3} precision={1} />         // 4 stars
 <Rating value={4.3} precision={0.5} />       // 4.5 stars
 <Rating value={4.3} icon="⭐" />              // emoji
@@ -145,6 +145,28 @@ const [field, meta, helpers] = useField('rating')
     />
   )}
 </Field>
+```
+
+</details>
+
+<details>
+<summary><b>TanStack Form</b></summary>
+
+```tsx
+<form.Field
+  name="rating"
+  validators={{ onChange: ({ value }) => (value < 1 ? 'Please rate' : undefined) }}
+>
+  {(field) => (
+    <Rating
+      name="rating"
+      value={field.state.value}
+      onChange={field.handleChange} // handleChange takes the number directly
+      onBlur={field.handleBlur}
+      invalid={!field.state.meta.isValid}
+    />
+  )}
+</form.Field>
 ```
 
 </details>

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/react-form": "^1.33.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-feedback-stars": "workspace:*",

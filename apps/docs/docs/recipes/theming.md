@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Theming
@@ -35,7 +35,9 @@ component, no `!important`, no reaching into internals.
 ```tsx
 import styles from './Rating.module.css'
 
-;<Rating className={styles.brand} value={4.3} />
+function Stars() {
+  return <Rating className={styles.brand} value={4.3} />
+}
 ```
 
 ## Tailwind CSS

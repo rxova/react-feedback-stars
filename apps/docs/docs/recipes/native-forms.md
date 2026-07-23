@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Native forms
@@ -35,7 +35,7 @@ function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 ```
 
 :::note Why `onChange={() => {}}`
-Providing `onChange` is what makes the component an interactive input (real radios that can be
+Providing `onChange` is what makes the component an interactive input (native radios that can be
 submitted). If you truly need it uncontrolled, a no-op handler keeps it interactive while you let the
 DOM hold the value via `defaultValue`. Prefer a controlled `value`/`onChange` pair whenever you have
 state to hold it.

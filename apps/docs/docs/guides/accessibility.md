@@ -18,7 +18,7 @@ A **display** is an image of a score — one labelled thing, not a list of focus
 **input** is a set of mutually exclusive choices — exactly a radio group. The component picks the
 right one based on whether you passed `onChange`.
 
-## Real radios, not fake ones
+## Native radios, not fake ones
 
 Interactive mode renders **visually-hidden native `<input type="radio">`** elements inside a
 `radiogroup`. This is deliberate: keyboard navigation, `:focus-visible`, form participation, and
@@ -47,15 +47,15 @@ most rating widgets get accessibility subtly wrong.
 group to your external error text so it is announced:
 
 ```tsx
-;<Rating
-  value={value}
-  onChange={onChange}
-  invalid={hasError}
-  aria-describedby={hasError ? 'rating-error' : undefined}
-/>
-{
-  hasError && <p id="rating-error">Please choose a rating.</p>
-}
+<>
+  <Rating
+    value={value}
+    onChange={onChange}
+    invalid={hasError}
+    aria-describedby={hasError ? 'rating-error' : undefined}
+  />
+  {hasError && <p id="rating-error">Please choose a rating.</p>}
+</>
 ```
 
 ## Also handled

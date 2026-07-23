@@ -13,7 +13,7 @@ scores, and dashboards.
 ```tsx
 import { Rating } from 'react-feedback-stars'
 
-<Rating value={4.3} />                       // continuous — a real 30% fifth star
+<Rating value={4.3} />                       // continuous — a 30%-filled fifth star
 <Rating value={4.3} precision={1} />         // 4 stars
 <Rating value={4.3} precision={0.5} />       // 4.5 stars
 <Rating value={4.3} icon="⭐" />              // emoji

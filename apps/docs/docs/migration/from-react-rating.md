@@ -34,8 +34,7 @@ has no runtime dependencies and requires no stylesheet. Re-verify before relying
 
 ```tsx
 // Before — react-rating
-import Rating from 'react-rating'
-;<Rating
+<Rating
   initialRating={3.5}
   stop={5}
   fractions={2}
@@ -48,8 +47,7 @@ import Rating from 'react-rating'
 
 ```tsx
 // After — react-feedback-stars
-import { Rating } from 'react-feedback-stars'
-;<Rating
+<Rating
   value={3.5}
   max={5}
   precision={0.5}
@@ -62,7 +60,7 @@ import { Rating } from 'react-feedback-stars'
 
 ## What you gain
 
-- **Real accessibility.** A `radiogroup` of native radios when interactive, `role="img"` when not —
+- **Genuine accessibility.** A `radiogroup` of native radios when interactive, `role="img"` when not —
   keyboard, focus-visible, and screen-reader support included.
 - **Exact continuous fills.** `precision={0}` renders any fractional value (e.g. `4.28`), not just
   the `1/fractions` grid.

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # Custom icons
@@ -20,8 +20,10 @@ function Heart() {
     </svg>
   )
 }
+```
 
-;<Rating value={3.5} max={5} icon={<Heart />} style={{ '--rfs-color-filled': 'crimson' }} />
+```tsx
+<Rating value={3.5} max={5} icon={<Heart />} style={{ '--rfs-color-filled': 'crimson' }} />
 ```
 
 Provide a distinct outline for the empty state, or omit `emptyIcon` to reuse the same icon dimmed:
