@@ -26,7 +26,7 @@ const config: Config = {
   title: 'react-feedback-stars',
   tagline:
     'Any icon, any precision, accessible. A headless, zero-dependency React rating component.',
-  favicon: 'img/favicon.svg',
+  favicon: 'img/logo.png',
 
   url: 'https://rxova.github.io',
   baseUrl: '/react-feedback-stars/',
