@@ -1,6 +1,12 @@
 packages:
   - packages/*
   - apps/*
+overrides:
+  # The docs app's build tooling (Docusaurus -> webpack plugins) resolves a
+  # vulnerable serialize-javascript (RCE + DoS advisories). Force the patched
+  # line; the API is unchanged, and this is dev-only build tooling that never
+  # ships in the published package.
+  serialize-javascript: '>=7.0.5'
 allowBuilds:
   core-js: false
   esbuild: true
