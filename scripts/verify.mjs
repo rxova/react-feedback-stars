@@ -2,12 +2,13 @@ import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 
 /**
- * One ordered definition of "is this releasable", executed by CI, by the
- * pre-push hook, and by the release workflow.
+ * One ordered definition of "is this releasable", executed locally by the
+ * pre-push hook. CI runs the same checks split across parallel jobs, and the
+ * release workflow gates on that CI run succeeding rather than re-running them.
  *
- * The point of a single list is that the publish path and the pull-request
- * path cannot drift: if the audit lived only in the CI workflow, a release
- * pushed to main could ship dependencies a PR would have been blocked on.
+ * The point of a single list is that the local pre-push gate and CI cannot
+ * drift: if the audit lived only in the CI workflow, a green local push could
+ * still be carrying dependencies CI would have blocked.
  *
  * Ordered cheapest-and-most-likely-to-fail first, so a broken build surfaces
  * in seconds rather than after the browser suite.

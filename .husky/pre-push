@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 set -e
 
-# The same ordered gate CI and the release workflow run, so a green push
-# means a green pipeline.
+# The same ordered gate CI runs (as separate jobs), so a green push means a
+# green pipeline. Release then trusts that CI run instead of re-verifying.
 pnpm run verify
