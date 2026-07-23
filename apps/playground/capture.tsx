@@ -31,6 +31,23 @@ function Interactive({ precision }: { precision: number }) {
   return <Rating value={score} onChange={setScore} precision={precision} label="Rate" />
 }
 
+/** Interactive with a distinct hover colour and a slow transition, for the styling GIF. */
+function StyleHover() {
+  const [score, setScore] = useState(0)
+  return (
+    <Rating
+      value={score}
+      onChange={setScore}
+      precision={0.5}
+      label="Rate"
+      style={{
+        ['--rfs-color-hover' as string]: '#22c55e',
+        ['--rfs-transition' as string]: '260ms',
+      }}
+    />
+  )
+}
+
 function App() {
   return (
     <main style={{ ['--rfs-size' as string]: '2.25rem' }}>
@@ -62,12 +79,44 @@ function App() {
         <Rating value={2.5} icon={(s) => <span>{s.partial ? '◐' : s.filled ? '●' : '○'}</span>} />
       </Shot>
 
+      {/* Styling gallery → one screenshot showing several visual knobs at once. */}
+      <Shot id="styling-gallery">
+        <div style={{ display: 'grid', gap: '0.55rem' }}>
+          <Rating
+            value={3.5}
+            style={{
+              ['--rfs-color-filled' as string]: '#6d28d9',
+              ['--rfs-color-empty' as string]: '#e5e7eb',
+            }}
+          />
+          <Rating
+            value={3.5}
+            icon={<Heart />}
+            style={{
+              ['--rfs-color-filled' as string]: 'crimson',
+              ['--rfs-gap' as string]: '0.4rem',
+            }}
+          />
+          <Rating value={3.5} icon="⭐" />
+          <Rating
+            value={3.5}
+            style={{
+              ['--rfs-size' as string]: '1.5rem',
+              ['--rfs-color-filled' as string]: '#0ea5e9',
+            }}
+          />
+        </div>
+      </Shot>
+
       {/* Interactive → GIFs. Driven by the capture script. */}
       <Shot id="int-half">
         <Interactive precision={0.5} />
       </Shot>
       <Shot id="int-whole">
         <Interactive precision={1} />
+      </Shot>
+      <Shot id="style-hover">
+        <StyleHover />
       </Shot>
     </main>
   )
