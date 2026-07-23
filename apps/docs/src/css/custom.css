@@ -1,0 +1,23 @@
+/* Primary is the library's default filled-star gold (--rfs-color-filled). */
+:root {
+  --ifm-color-primary: #b5760a;
+  --ifm-color-primary-dark: #a36a09;
+  --ifm-color-primary-darker: #996408;
+  --ifm-color-primary-darkest: #7e5307;
+  --ifm-color-primary-light: #c7820b;
+  --ifm-color-primary-lighter: #d1880c;
+  --ifm-color-primary-lightest: #ec9a12;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #f5a623;
+  --ifm-color-primary-dark: #ed990c;
+  --ifm-color-primary-darker: #e0900b;
+  --ifm-color-primary-darkest: #b87709;
+  --ifm-color-primary-light: #f7b243;
+  --ifm-color-primary-lighter: #f8b954;
+  --ifm-color-primary-lightest: #fbcf8a;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}

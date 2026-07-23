@@ -20,6 +20,9 @@
 pnpm add react-feedback-stars
 ```
 
+📖 **[Documentation & live examples →](https://rxova.github.io/react-feedback-stars/)** — guides,
+form recipes, theming, and migration from `react-rating` / `react-stars`.
+
 - **Bring your own icon** — SVG, emoji, image, arbitrary JSX
 - **Any precision** — continuous `4.3`, halves, tenths, or whole stars, with the rounding
   direction you choose
