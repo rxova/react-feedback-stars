@@ -42,6 +42,10 @@ import { Rating } from 'react-feedback-stars'
 <Rating value={3} max={10} icon={<Heart />} emptyIcon={<HeartOutline />} />
 ```
 
+| `value={4.3}`                                                              | `precision={1}`                                                     | `precision={0.5}`                                                    | `icon="⭐"`                                                       | custom `<Heart/>`                                                   |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
+| <img src="./assets/examples/continuous.png" width="150" alt="4.3 stars" /> | <img src="./assets/examples/whole.png" width="150" alt="4 stars" /> | <img src="./assets/examples/half.png" width="150" alt="4.5 stars" /> | <img src="./assets/examples/emoji.png" width="150" alt="emoji" /> | <img src="./assets/examples/hearts.png" width="150" alt="hearts" /> |
+
 ## Rounding
 
 Two orthogonal props: `precision` is the grid, `rounding` is the direction.
@@ -74,8 +78,12 @@ Renders a `radiogroup` of visually-hidden native radios, so arrow keys, form par
 focus-visible and screen-reader announcements all come from the platform rather than from
 hand-rolled JavaScript.
 
-> Interactive mode requires `precision >= 0.5`. Continuous input needs `role="slider"`, which is
-> planned for v2.
+<img src="./assets/examples/interactive-half.gif" width="240" alt="Hovering and clicking a half-star rating" />
+&nbsp;
+<img src="./assets/examples/interactive-keyboard.gif" width="240" alt="Selecting a rating with the keyboard, then clearing it" />
+
+> Interactive mode requires `precision >= 0.5`. A radiogroup offers discrete options, so continuous
+> _input_ has no steps to select; continuous _display_ works at any precision.
 
 ## Forms
 

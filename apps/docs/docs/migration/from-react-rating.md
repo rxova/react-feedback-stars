@@ -75,4 +75,5 @@ import { Rating } from 'react-feedback-stars'
 - **No `placeholderRating`.** If you used the placeholder purely to show a current score, that is
   just `value`.
 - **Interactive input needs `precision >= 0.5`.** `react-rating` let you set very fine `fractions`
-  for input; here continuous _input_ is not supported yet (continuous _display_ is).
+  for input; here a radiogroup offers discrete options, so continuous _input_ has no steps to select
+  (continuous _display_ works at any precision).

@@ -2,6 +2,8 @@
 sidebar_position: 2
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Taking a rating
 
 Providing `onChange` makes the component interactive. Nothing else changes about how you use it.
@@ -19,6 +21,10 @@ function Feedback() {
 }
 ```
 
+Hovering previews the value; clicking commits it:
+
+<img src={useBaseUrl('/img/examples/interactive-half.gif')} alt="Hovering and clicking a half-star rating" width="240" />
+
 Internally this renders a `radiogroup` of visually-hidden **native radio inputs**, so arrow-key
 navigation, form participation, focus-visible, and screen-reader announcements all come from the
 platform rather than from hand-rolled JavaScript.
@@ -29,8 +35,8 @@ it pair cleanly with form libraries; see [Forms](./forms.md).)
 ## Precision in interactive mode
 
 Interactive mode requires **`precision >= 0.5`**. Half and whole steps are selectable; continuous
-input is not, because a continuous input needs `role="slider"`, which is planned for a future major
-version.
+input is not — a radiogroup has discrete options, so a continuous _input_ has no discrete steps to
+offer. Continuous _display_ is fully supported at any precision.
 
 ```tsx
 <Rating value={score} onChange={setScore} precision={1} />    // whole-star input
@@ -48,6 +54,10 @@ version.
 
 Each rating is a **single tab stop**, including before anything is selected. Arrow direction follows
 text direction, so it stays intuitive in RTL.
+
+Arrow keys walking up the scale, then `Backspace` to clear:
+
+<img src={useBaseUrl('/img/examples/interactive-keyboard.gif')} alt="Selecting a rating with the arrow keys, then clearing with Backspace" width="240" />
 
 ## Hover preview
 

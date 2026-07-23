@@ -2,6 +2,8 @@
 sidebar_position: 1
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Displaying a score
 
 Without an `onChange`, `Rating` is a read-only display: `role="img"` with an accessible label, no tab
@@ -17,6 +19,16 @@ import { Rating } from 'react-feedback-stars'
 <Rating value={4.3} icon="⭐" />              // emoji
 <Rating value={3} max={10} icon={<Heart />} emptyIcon={<HeartOutline />} />
 ```
+
+What each renders:
+
+| Code                                            | Result                                                                                           |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `<Rating value={4.3} />`                        | <img src={useBaseUrl('/img/examples/continuous.png')} alt="4.3 stars, continuous" width="200" /> |
+| `<Rating value={4.3} precision={1} />`          | <img src={useBaseUrl('/img/examples/whole.png')} alt="4 whole stars" width="200" />              |
+| `<Rating value={4.3} precision={0.5} />`        | <img src={useBaseUrl('/img/examples/half.png')} alt="4.5 stars" width="200" />                   |
+| `<Rating value={4.3} icon="⭐" />`              | <img src={useBaseUrl('/img/examples/emoji.png')} alt="emoji rating" width="200" />               |
+| `<Rating value={3} max={5} icon={<Heart />} />` | <img src={useBaseUrl('/img/examples/hearts.png')} alt="3 of 5 hearts" width="200" />             |
 
 The first four, rendered live — **edit any value**:
 
@@ -60,6 +72,8 @@ component must not crash a page over a data value from an API.
 ```tsx
 <Rating value={7.5} max={10} />
 ```
+
+<img src={useBaseUrl('/img/examples/max10.png')} alt="7.5 out of 10 stars" width="320" />
 
 ## Custom icons
 

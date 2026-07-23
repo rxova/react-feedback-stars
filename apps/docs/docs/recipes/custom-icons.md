@@ -9,8 +9,8 @@ The library owns geometry; you own appearance. An `icon` (and optional `emptyIco
 
 ## An SVG
 
-Any SVG works. Size it in `em` so it scales with `--rfs-size`, and let it inherit `currentColor` so
-`--rfs-color-filled` applies:
+Any SVG works. Size it in `em` so it scales with `--rfs-size`, and give it `fill="currentColor"` so
+it picks up the fill color the component sets from `--rfs-color-filled`:
 
 ```tsx
 function Heart() {
@@ -21,7 +21,7 @@ function Heart() {
   )
 }
 
-;<Rating value={3.5} max={5} icon={<Heart />} style={{ color: 'crimson' }} />
+;<Rating value={3.5} max={5} icon={<Heart />} style={{ '--rfs-color-filled': 'crimson' }} />
 ```
 
 Provide a distinct outline for the empty state, or omit `emptyIcon` to reuse the same icon dimmed:
