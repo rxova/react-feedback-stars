@@ -11,7 +11,9 @@ coverage/
 .idea/
 .vscode/*
 !.vscode/extensions.json
-playground/dist/
+apps/playground/dist/
+apps/docs/.docusaurus/
+apps/docs/docs/api/
 test-results/
 playwright-report/
 .pw-browsers/

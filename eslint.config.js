@@ -6,15 +6,21 @@ import reactHooks from 'eslint-plugin-react-hooks'
 
 export default defineConfig(
   globalIgnores([
-    'dist/',
+    '**/dist/',
     'coverage/',
-    'node_modules/',
-    'playground/dist/',
+    '**/node_modules/',
+    'apps/docs/', // Docusaurus app: its own toolchain, typecheck and lint concerns
+    '**/build/',
+    '**/.docusaurus/',
     'test-results/',
     'playwright-report/',
     '.pw-browsers/',
     'pw-browsers/',
     '**/__screenshots__/',
+    // Build/tool config lives outside the type-checked program in a monorepo;
+    // linting it with projectService would demand a tsconfig per nested config.
+    '**/*.config.ts',
+    '**/*.config.js',
   ]),
   js.configs.recommended,
   {
@@ -30,7 +36,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['src/**/*.{ts,tsx}', 'playground/**/*.{ts,tsx}'],
+    files: ['packages/*/src/**/*.{ts,tsx}', 'apps/playground/**/*.{ts,tsx}'],
     plugins: { 'react-hooks': reactHooks },
     rules: reactHooks.configs.recommended.rules,
   },
@@ -41,7 +47,7 @@ export default defineConfig(
     rules: { 'no-console': 'off' },
   },
   {
-    files: ['**/__tests__/**', 'e2e/**', 'playground/**', '*.config.ts'],
+    files: ['**/__tests__/**', 'e2e/**', 'apps/playground/**'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',

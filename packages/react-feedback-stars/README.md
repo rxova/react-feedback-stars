@@ -1,7 +1,7 @@
 # react-feedback-stars
 
 <p align="center">
-  <img src="./packages/react-feedback-stars/assets/react-feedback-stars.png" alt="react-feedback-stars logo" width="180" />
+  <img src="./assets/react-feedback-stars.png" alt="react-feedback-stars logo" width="180" />
 </p>
 
 <p align="center">
@@ -30,21 +30,6 @@ form recipes, theming, and migration from `react-rating` / `react-stars`.
 - **Zero runtime dependencies**, ~2.3 kB brotli, no stylesheet to import
 - **Form-ready** — first-class React Hook Form / Formik / React Final Form / TanStack Form integration
 
-## Repository layout
-
-This repository is a pnpm workspace. The published package lives in
-[`packages/react-feedback-stars`](./packages/react-feedback-stars); everything else supports it.
-
-| Path                            | Name                               | Published? | What it is                                                                         |
-| ------------------------------- | ---------------------------------- | ---------- | ---------------------------------------------------------------------------------- |
-| `packages/react-feedback-stars` | `react-feedback-stars`             | ✅ npm     | The component. Start with its [README](./packages/react-feedback-stars/README.md). |
-| `apps/playground`               | `@react-feedback-stars/playground` | private    | Vite app the E2E suite drives; the manual QA surface.                              |
-| `apps/docs`                     | `@react-feedback-stars/docs`       | private    | Docusaurus site published to GitHub Pages.                                         |
-
-- **Package README:** [`packages/react-feedback-stars/README.md`](./packages/react-feedback-stars/README.md)
-- **Documentation site:** https://rxova.github.io/react-feedback-stars/
-- **npm:** https://www.npmjs.com/package/react-feedback-stars
-
 ## Display
 
 ```tsx
@@ -57,9 +42,9 @@ import { Rating } from 'react-feedback-stars'
 <Rating value={3} max={10} icon={<Heart />} emptyIcon={<HeartOutline />} />
 ```
 
-| `value={4.3}`                                                                                            | `precision={1}`                                                                                   | `precision={0.5}`                                                                                  | `icon="⭐"`                                                                                     | custom `<Heart/>`                                                                                 |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| <img src="./packages/react-feedback-stars/assets/examples/continuous.png" width="150" alt="4.3 stars" /> | <img src="./packages/react-feedback-stars/assets/examples/whole.png" width="150" alt="4 stars" /> | <img src="./packages/react-feedback-stars/assets/examples/half.png" width="150" alt="4.5 stars" /> | <img src="./packages/react-feedback-stars/assets/examples/emoji.png" width="150" alt="emoji" /> | <img src="./packages/react-feedback-stars/assets/examples/hearts.png" width="150" alt="hearts" /> |
+| `value={4.3}`                                                              | `precision={1}`                                                     | `precision={0.5}`                                                    | `icon="⭐"`                                                       | custom `<Heart/>`                                                   |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
+| <img src="./assets/examples/continuous.png" width="150" alt="4.3 stars" /> | <img src="./assets/examples/whole.png" width="150" alt="4 stars" /> | <img src="./assets/examples/half.png" width="150" alt="4.5 stars" /> | <img src="./assets/examples/emoji.png" width="150" alt="emoji" /> | <img src="./assets/examples/hearts.png" width="150" alt="hearts" /> |
 
 ## Rounding
 
@@ -93,9 +78,9 @@ Renders a `radiogroup` of visually-hidden native radios, so arrow keys, form par
 focus-visible and screen-reader announcements all come from the platform rather than from
 hand-rolled JavaScript.
 
-<img src="./packages/react-feedback-stars/assets/examples/interactive-half.gif" width="240" alt="Hovering and clicking a half-star rating" />
+<img src="./assets/examples/interactive-half.gif" width="240" alt="Hovering and clicking a half-star rating" />
 &nbsp;
-<img src="./packages/react-feedback-stars/assets/examples/interactive-keyboard.gif" width="240" alt="Selecting a rating with the keyboard, then clearing it" />
+<img src="./assets/examples/interactive-keyboard.gif" width="240" alt="Selecting a rating with the keyboard, then clearing it" />
 
 > Interactive mode requires `precision >= 0.5`. A radiogroup offers discrete options, so continuous
 > _input_ has no steps to select; continuous _display_ works at any precision.
@@ -222,9 +207,8 @@ on emoji and SVG alike. Pass an explicit `emptyIcon` and no filter is applied.
 
 ## Props
 
-See [`packages/react-feedback-stars/src/types.ts`](./packages/react-feedback-stars/src/types.ts) for
-the full annotated interface — every prop carries a TSDoc comment explaining what it does and why it
-exists.
+See [`src/types.ts`](./src/types.ts) for the full annotated interface — every prop carries a
+TSDoc comment explaining what it does and why it exists.
 
 ## Headless
 

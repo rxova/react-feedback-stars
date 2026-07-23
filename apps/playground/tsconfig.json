@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "paths": {
+      "react-feedback-stars": ["../../packages/react-feedback-stars/src/index.ts"]
+    }
+  },
+  "include": ["App.tsx", "main.tsx", "capture.tsx", "vite.config.ts"]
+}
