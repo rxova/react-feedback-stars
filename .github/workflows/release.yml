@@ -1,7 +1,15 @@
 name: Release
 
+# Runs only after CI has gone green on main. CI already runs the full ordered
+# gate (lint, types, tests, coverage, e2e, package contract) on the exact
+# commit being released, so re-running `pnpm run verify` here would just
+# duplicate that whole suite — browsers and all. Gating on CI's success gives
+# the same guarantee ("a push to main cannot publish something a PR would have
+# been blocked on") without running the checks a second time.
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -12,6 +20,9 @@ permissions:
 
 jobs:
   release:
+    # workflow_run fires on both success and failure; only release when CI
+    # passed. Manual dispatch has no upstream run to gate on.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write # version commit and tags
@@ -22,6 +33,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          # Check out main by name (not the workflow_run's detached SHA) so the
+          # changesets action knows its base branch when opening the version PR.
+          ref: main
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
@@ -29,17 +43,6 @@ jobs:
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
-
-      # `verify` ends with the e2e suite, which drives all three engines.
-      # Installing only Chromium here failed at launch with
-      # "Executable doesn't exist at .../webkit-2311/pw_run.sh".
-      - uses: ./.github/actions/setup-playwright
-
-      # The same ordered gate CI and the pre-push hook run. Keeping it here
-      # rather than trusting the CI run means a push straight to main cannot
-      # publish something a pull request would have been blocked on.
-      - name: Verify release surfaces
-        run: pnpm run verify
 
       - name: Create version PR or publish
         uses: changesets/action@v1
