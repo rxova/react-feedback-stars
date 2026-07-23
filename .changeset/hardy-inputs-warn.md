@@ -13,3 +13,5 @@ own logging, or leave it off for a deduped `console.warn`. The entire path is st
 production builds, and the value is clamped either way, so behavior is unchanged there.
 
 Exports the `RatingWarning` and `RatingWarningCode` types.
+
+Also declares a `>=20.19.0` Node engines requirement to match the supported toolchain.

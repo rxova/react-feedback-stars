@@ -33,7 +33,16 @@ const save = (name, buffer) => {
 }
 
 // Static displays → one PNG each.
-const STILLS = ['continuous', 'whole', 'half', 'emoji', 'hearts', 'max10', 'render-fn']
+const STILLS = [
+  'continuous',
+  'whole',
+  'half',
+  'emoji',
+  'hearts',
+  'max10',
+  'render-fn',
+  'styling-gallery',
+]
 
 const clipOf = (box) => ({
   x: Math.round(box.x),
@@ -127,6 +136,8 @@ async function main() {
   console.log('  ✔ interactive-half.gif')
   save('interactive-keyboard.gif', await keyboardGif(page, 'int-whole'))
   console.log('  ✔ interactive-keyboard.gif')
+  save('styling-hover.gif', await pointerGif(page, 'style-hover'))
+  console.log('  ✔ styling-hover.gif')
 
   await browser.close()
   console.log(`\n✔ captured to:\n  ${OUT_DIRS.join('\n  ')}`)
