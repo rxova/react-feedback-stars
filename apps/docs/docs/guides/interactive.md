@@ -5,14 +5,17 @@ sidebar_position: 2
 # Taking a rating
 
 Providing `onChange` makes the component interactive. Nothing else changes about how you use it.
+**Try it — click, or focus it and use the arrow keys:**
 
-```tsx
-import { useState } from 'react'
-import { Rating } from 'react-feedback-stars'
-
+```tsx live
 function Feedback() {
   const [score, setScore] = useState(0)
-  return <Rating value={score} onChange={setScore} precision={0.5} label="Rate your meal" />
+  return (
+    <div style={{ fontSize: '2rem' }}>
+      <Rating value={score} onChange={setScore} precision={0.5} label="Rate your meal" />
+      <p style={{ fontSize: '1rem' }}>Selected: {score}</p>
+    </div>
+  )
 }
 ```
 

@@ -31,14 +31,11 @@ pnpm add react-feedback-stars     # or: npm i / yarn add / bun add
 
 ## Show a score
 
-The default is a read-only, **continuous** display — no rounding, no interaction:
+The default is a read-only, **continuous** display — no rounding, no interaction. **Edit the code
+below** — every `live` example on this site renders for real (`Rating` is already imported):
 
-```tsx
-import { Rating } from 'react-feedback-stars'
-
-function ProductScore() {
-  return <Rating value={4.3} /> // a real 30%-filled fifth star
-}
+```tsx live
+<Rating value={4.3} /> // a real 30%-filled fifth star
 ```
 
 That renders `role="img"` with an accessible label like _“4.3 out of 5”_, and it is not a tab stop.
@@ -49,10 +46,7 @@ See [Displaying a score](../guides/display.md) for precision, rounding, and cust
 Provide `onChange` and the same component becomes an input — a `radiogroup` of real, keyboard-driven
 radios:
 
-```tsx
-import { useState } from 'react'
-import { Rating } from 'react-feedback-stars'
-
+```tsx live
 function RateYourMeal() {
   const [score, setScore] = useState(0)
   return <Rating value={score} onChange={setScore} precision={0.5} label="Rate your meal" />

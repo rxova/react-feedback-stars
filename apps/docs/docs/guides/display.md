@@ -18,6 +18,17 @@ import { Rating } from 'react-feedback-stars'
 <Rating value={3} max={10} icon={<Heart />} emptyIcon={<HeartOutline />} />
 ```
 
+The first four, rendered live — **edit any value**:
+
+```tsx live
+<div style={{ display: 'grid', gap: '0.75rem', fontSize: '1.75rem' }}>
+  <Rating value={4.3} />
+  <Rating value={4.3} precision={1} />
+  <Rating value={4.3} precision={0.5} />
+  <Rating value={4.3} icon="⭐" />
+</div>
+```
+
 ## Precision and rounding
 
 Two orthogonal props: **`precision`** is the grid a value snaps to, **`rounding`** is the direction
@@ -63,8 +74,12 @@ a filter.
 An `icon` (or `emptyIcon`) can also be a **function** that receives per-icon state and returns a
 node — useful for conditional rendering per position:
 
-```tsx
-<Rating value={2.5} icon={(s) => <span>{s.partial ? '◐' : s.filled ? '●' : '○'}</span>} />
+```tsx live
+<Rating
+  value={2.5}
+  style={{ fontSize: '1.75rem' }}
+  icon={(s) => <span>{s.partial ? '◐' : s.filled ? '●' : '○'}</span>}
+/>
 ```
 
 The state object is `{ index, fill, filled, empty, partial, active }`. See

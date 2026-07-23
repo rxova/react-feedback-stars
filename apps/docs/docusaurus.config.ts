@@ -37,6 +37,10 @@ const config: Config = {
   onBrokenLinks: 'warn',
   markdown: { hooks: { onBrokenMarkdownLinks: 'warn' } },
 
+  // Live, editable examples. The `Rating` component is injected into the live
+  // scope by src/theme/ReactLiveScope, so ```tsx live blocks render for real.
+  themes: ['@docusaurus/theme-live-codeblock'],
+
   i18n: { defaultLocale: 'en', locales: ['en'] },
 
   plugins: [['docusaurus-plugin-typedoc', typedocOptions]],

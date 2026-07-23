@@ -21,8 +21,10 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm install --frozen-lockfile
-      # The docs build runs TypeDoc against the library source directly, so no
-      # prior library build is needed — the API reference regenerates here.
+      # The docs import the real component for live examples, so the library
+      # must be built first. (TypeDoc still reads the source directly for the
+      # API reference, which regenerates during the docs build.)
+      - run: pnpm --filter react-feedback-stars build
       - run: pnpm --filter @react-feedback-stars/docs build
       - uses: actions/upload-pages-artifact@v5
         with:
