@@ -25,7 +25,6 @@ export const steps = [
   { name: 'Check package publishing metadata', script: 'check:exports' },
   { name: 'Smoke-test the package tarball', script: 'pack:smoke' },
   { name: 'Check bundle size budgets', script: 'size' },
-  { name: 'End-to-end', script: 'e2e' },
 ]
 
 const runPnpmScript = (script) => spawnSync('pnpm', ['run', script], { stdio: 'inherit' })

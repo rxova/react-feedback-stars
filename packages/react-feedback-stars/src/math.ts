@@ -28,11 +28,11 @@ export function clampValue(value: number, max: number): number {
   return value > max ? max : value
 }
 
-/** `max` must be a positive integer; anything else falls back to 5. */
-export function normalizeMax(max: number): number {
-  if (!Number.isFinite(max)) return 5
+/** `max` must be a positive integer; anything else falls back to `fallbackMax`. */
+export function normalizeMax(max: number, fallbackMax: number): number {
+  if (!Number.isFinite(max)) return fallbackMax
   const n = Math.floor(max)
-  return n >= 1 ? n : 5
+  return n >= 1 ? n : fallbackMax
 }
 
 /**

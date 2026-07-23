@@ -39,6 +39,9 @@
   "peerDependencies": {
     "react": ">=18.0.0"
   },
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit",

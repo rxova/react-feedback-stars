@@ -1,21 +1,38 @@
-import { useCallback, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { FocusEvent } from 'react'
 import { clampValue, getFills, getSteps, normalizeMax, snap } from './math'
-import type { RatingRounding } from './types'
+import { inspectMax, inspectValue } from './warn'
+import type { RatingRounding, RatingWarning } from './types'
+
+const DEFAULT_MAX = 5
 
 export interface UseRatingOptions {
+  /** Controlled score. Clamped to [0, max]; NaN/Infinity become 0. */
   value?: number
+  /** Uncontrolled initial score. Ignored when `value` is provided. */
   defaultValue?: number
+  /** Number of icons rendered. Positive integer. @default 5 */
   max?: number
+  /** Quantization grid: 1 = whole icons, 0.5 = halves, 0 = continuous. @default 0 */
   precision?: number
+  /** Direction of the snap onto the grid. @default 'nearest' */
   rounding?: RatingRounding
+  /** Providing this makes the component interactive. */
   onChange?: (value: number) => void
+  /** Hover/keyboard preview; `null` when the preview ends. */
   onHoverChange?: (value: number | null) => void
+  /** Fires when focus leaves the whole group, not when moving between icons. */
   onBlur?: (event: FocusEvent<HTMLElement>) => void
+  /** Callback invoked when a warning is emitted. */
+  onWarn?: (warning: RatingWarning) => void
+  /** Force read-only even when `onChange` is present. @default `!onChange` */
   readOnly?: boolean
   disabled?: boolean
+  /** Re-selecting the current value clears to 0. @default true when interactive */
   allowClear?: boolean
+  /** Radio group name; also emits a value readable by a native `<form>`. */
   name?: string
+  /** Base id; option inputs derive `${id}-1`, `${id}-2`, ... */
   id?: string
 }
 
@@ -63,12 +80,13 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
   const {
     value: valueProp,
     defaultValue = 0,
-    max: maxProp = 5,
+    max: maxProp = DEFAULT_MAX,
     precision = 0,
     rounding = 'nearest',
     onChange,
     onHoverChange,
     onBlur,
+    onWarn,
     readOnly,
     disabled = false,
     allowClear = true,
@@ -76,7 +94,7 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
     id: idProp,
   } = options
 
-  const max = normalizeMax(maxProp)
+  const max = normalizeMax(maxProp, DEFAULT_MAX)
   const reactId = useId()
   const baseId = idProp ?? `rfs-${reactId}`
   const name = nameProp ?? `rfs-name-${reactId}`
@@ -104,6 +122,34 @@ export function useRating(options: UseRatingOptions): UseRatingResult {
   const displayValue = hoverValue ?? value
   const fills = useMemo(() => getFills(displayValue, max), [displayValue, max])
   const steps = useMemo(() => getSteps(max, precision), [max, precision])
+
+  // Development-only input diagnostics. The value above is already clamped and
+  // painted; this only tells the developer *why* it differs from what they
+  // passed. Guarded so a production bundler drops the branch — and with it
+  // `inspect*` and `warn.ts` entirely — leaving no runtime cost. Deduped per
+  // instance so a controlled `value` re-rendering many times warns only once.
+  const warnedRef = useRef<Set<string> | null>(null)
+  useEffect(() => {
+    // A bundler folds this to a constant and drops the whole effect body in a
+    // production build, so the branch is unreachable once compiled and cannot
+    // be exercised by the (always-development) test build.
+    /* v8 ignore next */
+    if (process.env.NODE_ENV === 'production') return
+    const seen = (warnedRef.current ??= new Set<string>())
+    const emit = (warning: RatingWarning | null) => {
+      if (!warning) return
+      const key = `${warning.code}:${String(warning.received)}`
+      if (seen.has(key)) return
+      seen.add(key)
+      if (onWarn) onWarn(warning)
+      // The library ships no console noise in production; this line is only
+      // reached in development and is dropped from production builds.
+      // eslint-disable-next-line no-console
+      else console.warn(`[react-feedback-stars] ${warning.message}`)
+    }
+    emit(inspectValue(rawValue, max, isControlled ? 'value' : 'defaultValue'))
+    emit(inspectMax(maxProp, max))
+  }, [rawValue, max, maxProp, isControlled, onWarn])
 
   /** Commit a value as-is. No toggle, no clear-on-reselect. */
   const commit = useCallback(

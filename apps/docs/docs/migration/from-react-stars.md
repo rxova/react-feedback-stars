@@ -4,14 +4,13 @@ sidebar_position: 2
 
 # From `react-stars`
 
-[`react-stars`](https://www.npmjs.com/package/react-stars) is a small, styling-via-props star rating.
-It is easy to drop in, but it renders `<span>`s with **no ARIA, no `tabIndex`, and no keyboard
-handling** — mouse only — and its icon is limited to a single character.
+[`react-stars`](https://www.npmjs.com/package/react-stars) is a compact star-rating component with
+styling props. This guide maps those props to the component API and CSS custom properties used by
+`react-feedback-stars`.
 
 :::note Research date
-Verified against `react-stars` **2.2.5** (latest; published 2017-11-06) on 2026-07-23. It bundles
-`prop-types` and requires no stylesheet (styling is via `color1` / `color2` / `size` / `char`).
-Re-verify before relying on these details.
+This API mapping was verified against `react-stars` **2.2.5** on 2026-07-23. Re-verify the mapping if
+you use a different version.
 :::
 
 ## Prop mapping
@@ -21,7 +20,7 @@ Re-verify before relying on these details.
 | `count={5}`           | `max={5}`                       | Number of icons                              |
 | `value={3.5}`         | `value={3.5}`                   | Same prop name                               |
 | `half={true}`         | `precision={0.5}`               | `half={false}` → `precision={1}`             |
-| `edit={false}`        | `readOnly` (or omit `onChange`) | **Inverted:** `edit` false = locked          |
+| `edit={false}`        | `readOnly` (or omit `onChange`) | Read-only equivalent                         |
 | `char="●"`            | `icon="●"`                      | Any `ReactNode` — string, emoji, SVG, or JSX |
 | `color1` (inactive)   | `--rfs-color-empty`             | A CSS custom property                        |
 | `color2` (active)     | `--rfs-color-filled`            | A CSS custom property                        |
@@ -63,19 +62,19 @@ Re-verify before relying on these details.
 The default icon is already a star, so `char="★"` usually needs no `icon` at all. For a different
 glyph, pass `icon="●"` (or any node).
 
-## What you gain
+## Features available after migration
 
-- **Genuine accessibility.** Native radios in a `radiogroup` when interactive; `role="img"` when not.
-- **Any icon, not one character.** SVG, images, emoji (including ZWJ sequences), and render
-  functions — not just a single `char`.
-- **Exact continuous fills** and explicit `precision` × `rounding`, instead of whole/half only.
-- **A stable styling contract** (semver-covered `--rfs-*` variables and `data-*` hooks) rather than
-  a fixed set of color/size props.
+- **Built-in accessibility semantics.** Interactive ratings use native radios in a `radiogroup`;
+  read-only ratings use `role="img"`.
+- **Flexible icon content.** Icons can be SVGs, images, emoji (including ZWJ sequences), or render
+  functions.
+- **Exact continuous fills** with explicit `precision` and `rounding` controls.
+- **A stable styling contract** through semver-covered `--rfs-*` variables and `data-*` hooks.
 
-## Watch out for
+## Migration notes
 
-- **`edit` is inverted.** `edit={false}` becomes `readOnly` (or just drop `onChange`).
+- **Map editability to read-only state.** `edit={false}` becomes `readOnly` (or omit `onChange`).
 - **Colors move to CSS.** `color1`/`color2`/`size` become `--rfs-color-empty` /
   `--rfs-color-filled` / `--rfs-size` — set them via `style`, a `className`, or your theme.
-- **Emoji ignore `--rfs-color-filled`.** If you used a colored emoji `char`, recolor no longer
-  applies; see [Custom icons](../recipes/custom-icons.md).
+- **Emoji keep their own colors.** When using a colored emoji as the icon, see
+  [Custom icons](../recipes/custom-icons.md) for styling options.
