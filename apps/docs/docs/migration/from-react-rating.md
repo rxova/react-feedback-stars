@@ -4,14 +4,13 @@ sidebar_position: 1
 
 # From `react-rating`
 
-[`react-rating`](https://www.npmjs.com/package/react-rating) (by dreyescat) is a flexible symbol-based
-rating with a range model. Its symbols are configurable, but it renders plain `<span>`s with **no
-ARIA roles, no keyboard support, and no focus management** — so it is neither keyboard- nor
-screen-reader-operable.
+[`react-rating`](https://www.npmjs.com/package/react-rating) (by dreyescat) uses a flexible,
+symbol-based range model. This guide maps that API to the icon-count and precision model used by
+`react-feedback-stars`.
 
 :::note Research date
-Verified against `react-rating` **2.0.5** (latest; published 2020-03-25) on 2026-07-23. That release
-has no runtime dependencies and requires no stylesheet. Re-verify before relying on these details.
+This API mapping was verified against `react-rating` **2.0.5** on 2026-07-23. Re-verify the mapping
+if you use a different version.
 :::
 
 ## Prop mapping
@@ -58,20 +57,19 @@ has no runtime dependencies and requires no stylesheet. Re-verify before relying
 />
 ```
 
-## What you gain
+## Features available after migration
 
-- **Genuine accessibility.** A `radiogroup` of native radios when interactive, `role="img"` when not —
-  keyboard, focus-visible, and screen-reader support included.
-- **Exact continuous fills.** `precision={0}` renders any fractional value (e.g. `4.28`), not just
-  the `1/fractions` grid.
-- **No throwing on bad data.** Out-of-range / `NaN` / `Infinity` values clamp instead of erroring.
+- **Built-in accessibility semantics.** Interactive ratings use a `radiogroup` of native radios;
+  read-only ratings use `role="img"`. Keyboard, focus-visible, and screen-reader behavior is included.
+- **Exact continuous fills.** `precision={0}` can render any fractional value, such as `4.28`.
+- **Defensive value handling.** Out-of-range, `NaN`, and `Infinity` values are clamped.
 
-## Watch out for
+## Migration notes
 
-- **`fractions` is inverted math.** It is a count of subdivisions; `precision` is the step size.
+- **Convert subdivisions to a step size.** `fractions` is a count of subdivisions; `precision` is
+  the step size.
   `fractions={2}` → `precision={0.5}`, `fractions={4}` → `precision={0.25}`.
-- **No `placeholderRating`.** If you used the placeholder purely to show a current score, that is
-  just `value`.
-- **Interactive input needs `precision >= 0.5`.** `react-rating` let you set very fine `fractions`
-  for input; here a radiogroup offers discrete options, so continuous _input_ has no steps to select
-  (continuous _display_ works at any precision).
+- **Represent the displayed score with `value`.** A score previously supplied as a placeholder can
+  be passed as `value`.
+- **Interactive input needs `precision >= 0.5`.** The radiogroup exposes discrete options, so
+  continuous _input_ has no steps to select. Continuous _display_ works at any precision.

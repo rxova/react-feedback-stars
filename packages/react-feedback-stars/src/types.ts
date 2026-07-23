@@ -3,6 +3,37 @@ import type { CSSProperties, FocusEvent, ReactNode } from 'react'
 /** How a value snaps onto the `precision` grid. See the rounding table in the README. */
 export type RatingRounding = 'nearest' | 'down' | 'up' | 'none'
 
+/**
+ * Stable machine code for a coerced input. Safe to `switch` on; the human
+ * `message` on {@link RatingWarning} is for logs, this is for logic.
+ */
+export type RatingWarningCode =
+  | 'value-non-finite'
+  | 'value-negative'
+  | 'value-above-max'
+  | 'max-non-finite'
+  | 'max-too-small'
+  | 'max-non-integer'
+
+/**
+ * Emitted when the component keeps itself functional by coercing an
+ * out-of-range prop — a `value` above `max`, a negative or non-finite `value`,
+ * or a `max` that is not a positive integer. The coerced result (`used`) is
+ * what actually renders; the warning is a development-only heads-up that the
+ * input was off, never an error.
+ */
+export interface RatingWarning {
+  code: RatingWarningCode
+  /** The prop that carried the offending value. */
+  prop: 'value' | 'defaultValue' | 'max'
+  /** The value as received, before coercion. */
+  received: number
+  /** The value actually used after coercion — what gets painted. */
+  used: number
+  /** Human-readable explanation, safe to log as-is. */
+  message: string
+}
+
 /** Per-icon state handed to an `icon` / `emptyIcon` render function. */
 export interface RatingIconState {
   /** 0-based position in the row. */
@@ -78,4 +109,14 @@ export interface RatingProps {
 
   className?: string
   style?: CSSProperties
+
+  // ---- Diagnostics ----------------------------------------------------------
+  /**
+   * Called in development whenever a prop is coerced to keep the component
+   * functional — see {@link RatingWarning}. The coerced result still renders,
+   * so this never changes what the user sees; it only surfaces the mistake.
+   * When omitted, the same warnings go to `console.warn`. The entire path is
+   * stripped from production builds, so this is a no-op there.
+   */
+  onWarn?: (warning: RatingWarning) => void
 }

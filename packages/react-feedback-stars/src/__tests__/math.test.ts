@@ -30,15 +30,17 @@ describe('clampValue', () => {
 
 describe('normalizeMax', () => {
   it.each([
-    [5, 5],
-    [10, 10],
-    [1, 1],
-    [4.7, 4],
-    [0, 5],
-    [-3, 5],
-    [Number.NaN, 5],
-  ])('normalizeMax(%p) -> %p', (input, expected) => {
-    expect(normalizeMax(input)).toBe(expected)
+    [5, 5, 5],
+    [10, 5, 10],
+    [1, 5, 1],
+    [4.7, 5, 4],
+    [0, 5, 5],
+    [-3, 5, 5],
+    [Number.NaN, 5, 5],
+    [0, 10, 10],
+    [Number.NaN, 10, 10],
+  ])('normalizeMax(%p, fallback %p) -> %p', (input, fallback, expected) => {
+    expect(normalizeMax(input, fallback)).toBe(expected)
   })
 })
 

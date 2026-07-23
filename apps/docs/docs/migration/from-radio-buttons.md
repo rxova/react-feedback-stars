@@ -6,10 +6,10 @@ sidebar_position: 3
 
 A well-built rating input is usually a group of radio buttons under the hood — which is exactly what
 `react-feedback-stars` renders in interactive mode. If you have a bespoke radio-based star widget,
-this is less a migration than a consolidation: you keep the semantics you already got right and drop
-the CSS gymnastics.
+this migration lets you keep the same semantic foundation while moving the rating behavior and
+styling into a reusable component.
 
-## The pattern you probably have
+## A typical starting point
 
 ```tsx
 // Before — a hand-rolled radiogroup
@@ -30,10 +30,9 @@ the CSS gymnastics.
 </fieldset>
 ```
 
-This is the right foundation, but by hand you still have to solve: partial/half fills, hover
-preview, arrow-key semantics that match a radiogroup, RTL fill direction, the focus ring not being
-clipped by the fill layer, `prefers-reduced-motion`, and `onBlur` that fires on group exit rather
-than between icons.
+`react-feedback-stars` packages common rating behaviors around this foundation, including partial
+and half fills, hover preview, radiogroup arrow-key semantics, RTL fill direction, focus-ring
+handling, `prefers-reduced-motion`, and group-level `onBlur` behavior.
 
 ## After
 
@@ -42,8 +41,8 @@ than between icons.
 <Rating name="rating" value={score} onChange={setScore} max={5} precision={0.5} label="Rating" />
 ```
 
-Same DOM contract — a `radiogroup` of native radios, one tab stop, submits under `name` — with the
-hard parts handled.
+The DOM contract remains familiar: a `radiogroup` of native radios, one tab stop, and native form
+submission under `name`.
 
 ## Mapping your building blocks
 
@@ -64,8 +63,7 @@ hard parts handled.
 Because `name`, `onBlur`, `invalid`, `required`, and `aria-describedby` are all first-class, your
 existing form wiring ports directly — see [Forms](../guides/forms.md) and the per-library
 [recipes](../recipes/react-hook-form.md). If you were validating on blur, note that `onBlur` here
-fires when focus leaves the **whole group**, not between icons, which is usually what you wanted
-anyway.
+fires when focus leaves the **whole group**, rather than when focus moves between icons.
 
 ## When to keep rolling your own
 

@@ -210,6 +210,39 @@ on emoji and SVG alike. Pass an explicit `emptyIcon` and no filter is applied.
 See [`src/types.ts`](./src/types.ts) for the full annotated interface — every prop carries a
 TSDoc comment explaining what it does and why it exists.
 
+## Resilient input
+
+Out-of-range props never break the component — they are coerced to the nearest sensible value so
+it always renders something valid:
+
+| Input                          | Coerced to         |
+| ------------------------------ | ------------------ |
+| `value` above `max`            | `max`              |
+| Negative `value`               | `0`                |
+| `NaN` / `±Infinity` `value`    | `0`                |
+| `max` below `1`, or non-finite | `5`                |
+| Non-integer `max` (e.g. `4.7`) | `Math.floor` (`4`) |
+
+Because that coercion is silent, a bug like `value={7}` on a 5-star widget would otherwise pass
+unnoticed. In development the component surfaces each coercion; pass `onWarn` to route them into
+your own logging, or leave it off for a `console.warn`:
+
+```tsx
+<Rating
+  value={score}
+  max={5}
+  onWarn={(w) => {
+    // w: { code, prop, received, used, message }
+    if (w.code === 'value-above-max') reportToTelemetry(w)
+  }}
+/>
+```
+
+`onWarn` fires once per distinct problem, and the whole path — handler included — is stripped from
+production builds, so it costs nothing there and the value is still clamped either way. Codes are
+stable and safe to `switch` on: see `RatingWarning` / `RatingWarningCode` in
+[`src/types.ts`](./src/types.ts).
+
 ## Headless
 
 `useRating` exposes the state machine — value, hover preview, focus, group blur, fills and steps
