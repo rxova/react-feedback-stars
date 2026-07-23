@@ -1,7 +1,10 @@
 {
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "react-feedback-stars": ["../../packages/react-feedback-stars/src/index.ts"]
+    }
   },
   "include": ["docusaurus.config.ts", "sidebars.ts", "src"],
   "exclude": ["build", ".docusaurus"]
