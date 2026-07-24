@@ -24,6 +24,15 @@ jobs:
     # passed. Manual dispatch has no upstream run to gate on.
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    env:
+      # Disable Husky for the whole job. The changesets action makes a
+      # `chore: version package` commit, which would otherwise fire the local
+      # `pre-commit` hook and run `test:coverage` — the browser project plus a
+      # 95% per-file threshold. This job deliberately never installs Playwright
+      # browsers (it trusts CI's already-green run rather than re-verifying), so
+      # the hook cannot launch chromium, coverage collapses below threshold, and
+      # the release dies. Skipping the hook restores the "trust CI" design.
+      HUSKY: '0'
     permissions:
       contents: write # version commit and tags
       pull-requests: write # the version PR
