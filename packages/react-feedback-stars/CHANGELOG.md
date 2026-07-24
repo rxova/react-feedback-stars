@@ -1,5 +1,23 @@
 # react-feedback-stars
 
+## 0.2.0
+
+### Minor Changes
+
+- [#11](https://github.com/rxova/react-feedback-stars/pull/11) [`6cdd572`](https://github.com/rxova/react-feedback-stars/commit/6cdd57242a2f855f70903c2290f2abc34e24f582) Thanks [@jonatankruszewski](https://github.com/jonatankruszewski)! - Add development-only input diagnostics via a new `onWarn` prop.
+
+  Out-of-range props were already coerced to keep the component functional — a `value` above `max`
+  paints `max`, a negative or non-finite `value` becomes `0`, and an invalid `max` falls back to a
+  positive integer — but that coercion was silent, so mistakes like `value={7}` on a 5-star widget
+  went unnoticed. The component now surfaces each coercion in development with a structured
+  `RatingWarning` (`{ code, prop, received, used, message }`). Pass `onWarn` to route these into your
+  own logging, or leave it off for a deduped `console.warn`. The entire path is stripped from
+  production builds, and the value is clamped either way, so behavior is unchanged there.
+
+  Exports the `RatingWarning` and `RatingWarningCode` types.
+
+  Also declares a `>=20.19.0` Node engines requirement to match the supported toolchain.
+
 ## 0.1.1
 
 ### Patch Changes
