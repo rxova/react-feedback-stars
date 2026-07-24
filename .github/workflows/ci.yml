@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
+    # `labeled`/`unlabeled` are added on top of the defaults (opened,
+    # synchronize, reopened) so that adding the `skip-changeset` label to an
+    # already-opened PR re-runs the `changeset present` gate instead of leaving
+    # its earlier failure stuck red until the next push.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 # Default to read-only; jobs opt into more where they need it.
 permissions:
